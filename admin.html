@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mail Market Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; }
+        .form-control, .form-select { background-color: #0f172a; border: 1px solid #334155; color: white; }
+        .form-control:focus, .form-select:focus { background-color: #0f172a; color: white; }
+    </style>
+</head>
+<body class="p-3">
+
+<div class="container" style="max-width: 700px;">
+    <h3 class="text-primary fw-bold mb-4">Mail Market Control Center</h3>
+
+    <!-- 1. Category -->
+    <div class="card p-3 mb-3">
+        <h6 class="text-white fw-bold mb-2">Add Category</h6>
+        <div class="input-group">
+            <input type="text" id="cat-name" class="form-control" placeholder="Category Name (e.g. Gmail)">
+            <button onclick="addCategory()" class="btn btn-primary fw-bold">Add</button>
+        </div>
+    </div>
+
+    <!-- 2. Product -->
+    <div class="card p-3 mb-3">
+        <h6 class="text-white fw-bold mb-2">Publish Item / Stock</h6>
+        <select id="prod-cat" class="form-select mb-2"></select>
+        <input type="text" id="prod-title" class="form-control mb-2" placeholder="Item Title">
+        <div class="row g-2 mb-2">
+            <div class="col"><input type="number" id="prod-price" class="form-control" placeholder="Price (৳ BDT)"></div>
+            <div class="col"><input type="number" id="prod-stock" class="form-control" placeholder="Stock Qty"></div>
+        </div>
+        <textarea id="prod-desc" class="form-control mb-2" placeholder="Description / Details"></textarea>
+        <button onclick="addProduct()" class="btn btn-success w-100 fw-bold">Publish Item</button>
+    </div>
+
+    <!-- 3. Deposits -->
+    <div class="card p-3">
+        <h6 class="text-white fw-bold mb-3">Pending Deposits</h6>
+        <div id="deposit-list"></div>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = 'https://gdrimiieqjipetvfofyi.supabase.co';
+    const SUPABASE_KEY = 'Sb_publishable_1RnQ2S6zpd5CDXWN66gxjw_1oFi9iA8';
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    loadCategories();
+    loadDeposits();
+
+    async function loadCategories() {
+        const { data } = await db.from('categories').select('*');
+        const select = document.getElementById('prod-cat');
+        select.innerHTML = '<option value="">Select Parent Category</option>';
+        if(data) data.forEach(c => select.innerHTML += `<option value="${c.id}">${c.name}</option>`);
+    }
+
+    async function addCategory() {
+        const name = document.getElementById('cat-name').value.trim();
+        if(!name) return alert('Enter name');
+        await db.from('categories').insert([{ name }]);
+        alert('Category Created!');
+        document.getElementById('cat-name').value = '';
+        loadCategories();
+    }
+
+    async function addProduct() {
+        const category_id = document.getElementById('prod-cat').value;
+        const title = document.getElementById('prod-title').value.trim();
+        const price = parseFloat(document.getElementById('prod-price').value);
+        const stock = parseInt(document.getElementById('prod-stock').value) || 0;
+        const description = document.getElementById('prod-desc').value.trim();
+
+        if(!category_id || !title || !price) return alert('Fill required fields');
+
+        await db.from('products').insert([{ category_id, title, price, stock, description }]);
+        alert('Item Published!');
+    }
+
+    async function loadDeposits() {
+        const { data } = await db.from('deposits').select('*').eq('status', 'pending');
+        const list = document.getElementById('deposit-list');
+        list.innerHTML = '';
+        if(!data || data.length === 0) return list.innerHTML = '<small class="text-muted">No pending deposit requests.</small>';
+        
+        data.forEach(d => {
+            list.innerHTML += `
+                <div class="d-flex justify-content-between align-items-center border-bottom border-secondary py-2">
+                    <div>
+                        <small class="text-white"><b>${d.user_email}</b> (${d.method})</small><br>
+                        <span class="text-primary fw-bold">৳${d.amount}</span> - TrxID: <code class="text-info">${d.trx_id}</code>
+                    </div>
+                    <button onclick="approveDeposit(${d.id}, ${d.user_id}, ${d.amount})" class="btn btn-sm btn-success fw-bold">Approve</button>
+                </div>
+            `;
+        });
+    }
+
+    async function approveDeposit(depId, userId, amount) {
+        const { data: user } = await db.from('users').select('balance').eq('id', userId).single();
+        if(user) {
+            const newBalance = (parseFloat(user.balance) || 0) + parseFloat(amount);
+            await db.from('users').update({ balance: newBalance }).eq('id', userId);
+            await db.from('deposits').update({ status: 'approved' }).eq('id', depId);
+            alert('Deposit Approved!');
+            loadDeposits();
+        }
+    }
+</script>
+</body>
+</html>
