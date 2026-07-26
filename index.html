@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mail Market - Digital Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #6366f1;
+            --accent-hover: #4f46e5;
+            --text-color: #f8fafc;
+        }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Inter', sans-serif; padding-bottom: 80px; }
+        .top-navbar { background: #1e1b4b; border-bottom: 1px solid #312e81; padding: 15px 20px; }
+        .product-card { background: var(--card-bg); border: 1px solid #334155; border-radius: 16px; margin-bottom: 15px; transition: transform 0.2s; }
+        .product-card:active { transform: scale(0.98); }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #1e1b4b; border-top: 1px solid #312e81; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
+        .bottom-nav a { color: #94a3b8; text-decoration: none; text-align: center; font-size: 11px; }
+        .bottom-nav a.active, .bottom-nav a:hover { color: #818cf8; }
+        .cat-btn { border-radius: 30px; font-weight: 500; font-size: 13px; background: #334155; color: #f8fafc; border: none; padding: 6px 16px; white-space: nowrap; }
+        .cat-btn.active { background: var(--accent-color); color: white; }
+        .balance-badge { background: #312e81; color: #a5b4fc; border: 1px solid #6366f1; border-radius: 20px; padding: 6px 14px; font-weight: 600; }
+        .btn-custom { background: var(--accent-color); color: white; border-radius: 10px; font-weight: 600; }
+        .btn-custom:hover { background: var(--accent-hover); color: white; }
+        .modal-content { background: var(--card-bg); color: var(--text-color); border: 1px solid #334155; border-radius: 16px; }
+        .form-control, .form-select { background-color: #0f172a; border: 1px solid #334155; color: white; border-radius: 10px; }
+        .form-control:focus, .form-select:focus { background-color: #0f172a; color: white; border-color: var(--accent-color); box-shadow: none; }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="top-navbar d-flex justify-content-between align-items-center shadow-sm">
+    <h5 class="m-0 fw-bold text-white"><i class="fa-solid fa-cart-flatbed-suitcases me-2 text-primary"></i>Mail Market</h5>
+    <div>
+        <span class="balance-badge">৳ <span id="balance-val">0.00</span></span>
+    </div>
+</div>
+
+<div class="container mt-3">
+
+    <!-- Auth View -->
+    <div id="auth-view" class="card product-card p-4 mx-auto my-5" style="max-width: 400px;">
+        <h4 class="text-center text-white fw-bold mb-3" id="auth-title">Welcome to Mail Market</h4>
+        <div class="mb-3" id="name-group" style="display: none;">
+            <label class="form-label text-muted small">Full Name</label>
+            <input type="text" id="user-name" class="form-control" placeholder="Enter name">
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-muted small">Email Address</label>
+            <input type="email" id="user-email" class="form-control" placeholder="Enter email">
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-muted small">Password</label>
+            <input type="password" id="user-password" class="form-control" placeholder="Enter password">
+        </div>
+        <button onclick="handleAuth()" class="btn btn-custom w-100 py-2 mb-2" id="auth-btn">Login</button>
+        <div class="text-center">
+            <small class="text-muted" id="auth-toggle-text">New user? <a href="#" onclick="toggleAuthMode()" class="text-primary text-decoration-none">Create an account</a></small>
+        </div>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="dashboard-view" class="d-none">
+        <div class="d-flex overflow-auto pb-2 mb-3 gap-2" id="category-bar">
+            <button onclick="filterCategory('All')" class="cat-btn active">All Items</button>
+        </div>
+        <div id="product-container" class="row">
+            <p class="text-center text-muted mt-4">Loading market inventory...</p>
+        </div>
+    </div>
+
+</div>
+
+<!-- Deposit Modal -->
+<div class="modal fade" id="depositModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-2">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold text-white"><i class="fa-solid fa-wallet text-primary me-2"></i>Add Funds</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+            <label class="form-label small text-muted">Payment Method</label>
+            <select id="dep-method" class="form-select">
+                <option value="bKash">bKash Personal</option>
+                <option value="Nagad">Nagad Personal</option>
+                <option value="Rocket">Rocket Personal</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label small text-muted">Amount (৳ BDT)</label>
+            <input type="number" id="dep-amount" class="form-control" placeholder="0.00">
+        </div>
+        <div class="mb-3">
+            <label class="form-label small text-muted">Transaction ID (TrxID)</label>
+            <input type="text" id="dep-trx" class="form-control" placeholder="e.g. 9J83KX91">
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-custom w-100 py-2" onclick="submitDeposit()">Submit Deposit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+    <a href="#" onclick="showDashboard()" class="active"><i class="fa-solid fa-house-chimney d-block fs-6 mb-1"></i>Home</a>
+    <a href="#" onclick="openDepositModal()"><i class="fa-solid fa-wallet d-block fs-6 mb-1"></i>Deposit</a>
+    <a href="#" onclick="logout()"><i class="fa-solid fa-power-off d-block fs-6 mb-1"></i>Logout</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const SUPABASE_URL = 'https://gdrimiieqjipetvfofyi.supabase.co';
+    const SUPABASE_KEY = 'Sb_publishable_1RnQ2S6zpd5CDXWN66gxjw_1oFi9iA8';
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentUser = null;
+    let isRegisterMode = false;
+    let allCategories = [], allProducts = [];
+
+    function toggleAuthMode() {
+        isRegisterMode = !isRegisterMode;
+        document.getElementById('auth-title').innerText = isRegisterMode ? 'Create Account' : 'Welcome to Mail Market';
+        document.getElementById('auth-btn').innerText = isRegisterMode ? 'Register' : 'Login';
+        document.getElementById('name-group').style.display = isRegisterMode ? 'block' : 'none';
+    }
+
+    async function handleAuth() {
+        const email = document.getElementById('user-email').value.trim();
+        const password = document.getElementById('user-password').value.trim();
+        const name = document.getElementById('user-name').value.trim();
+
+        if(!email || !password) return alert('Fill in all fields');
+
+        if(isRegisterMode) {
+            const { data, error } = await db.from('users').insert([{ email, password, name, balance: 0.00 }]).select();
+            if(error) return alert('Failed: ' + error.message);
+            currentUser = data[0];
+        } else {
+            const { data, error } = await db.from('users').select('*').eq('email', email).eq('password', password);
+            if(error || data.length === 0) return alert('Invalid Email or Password');
+            currentUser = data[0];
+        }
+        showDashboard();
+    }
+
+    function showDashboard() {
+        document.getElementById('auth-view').classList.add('d-none');
+        document.getElementById('dashboard-view').classList.remove('d-none');
+        document.getElementById('balance-val').innerText = parseFloat(currentUser.balance).toFixed(2);
+        loadData();
+    }
+
+    function logout() {
+        currentUser = null;
+        document.getElementById('auth-view').classList.remove('d-none');
+        document.getElementById('dashboard-view').classList.add('d-none');
+    }
+
+    async function loadData() {
+        const { data: catData } = await db.from('categories').select('*');
+        const { data: prodData } = await db.from('products').select('*');
+        allCategories = catData || [];
+        allProducts = prodData || [];
+        renderCategories();
+        renderProducts(allProducts);
+    }
+
+    function renderCategories() {
+        const bar = document.getElementById('category-bar');
+        bar.innerHTML = `<button onclick="filterCategory('All')" class="cat-btn active">All Items</button>`;
+        allCategories.forEach(c => {
+            bar.innerHTML += `<button onclick="filterCategory(${c.id})" class="cat-btn">${c.name}</button>`;
+        });
+    }
+
+    function filterCategory(catId) {
+        if(catId === 'All') return renderProducts(allProducts);
+        renderProducts(allProducts.filter(p => p.category_id == catId));
+    }
+
+    function renderProducts(products) {
+        const container = document.getElementById('product-container');
+        container.innerHTML = '';
+        if(products.length === 0) {
+            container.innerHTML = `<p class="text-center text-muted mt-4">No accounts listed in this category.</p>`;
+            return;
+        }
+        products.forEach(p => {
+            container.innerHTML += `
+                <div class="col-12 col-md-6">
+                    <div class="card product-card p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="fw-bold text-white mb-0">${p.title}</h6>
+                                <span class="badge bg-primary mt-1" style="font-size: 10px;">Stock: ${p.stock || 0}</span>
+                            </div>
+                            <h5 class="text-primary fw-bold mb-0">৳${p.price}</h5>
+                        </div>
+                        <p class="small text-muted mb-3">${p.description || 'Instant delivery available.'}</p>
+                        <button class="btn btn-custom btn-sm w-100 fw-bold">Purchase</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function openDepositModal() {
+        if(!currentUser) return alert('Login required');
+        var myModal = new bootstrap.Modal(document.getElementById('depositModal'));
+        myModal.show();
+    }
+
+    async function submitDeposit() {
+        const method = document.getElementById('dep-method').value;
+        const amount = parseFloat(document.getElementById('dep-amount').value);
+        const trx_id = document.getElementById('dep-trx').value.trim();
+
+        const { error } = await db.from('deposits').insert([{
+            user_id: currentUser.id, user_email: currentUser.email, method, amount, trx_id, status: 'pending'
+        }]);
+
+        if(error) return alert('Error: ' + error.message);
+        alert('Deposit request submitted! Admin will verify soon.');
+        bootstrap.Modal.getInstance(document.getElementById('depositModal')).hide();
+    }
+</script>
+</body>
+</html>
