@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mail Market - Digital Store</title>
-    <!-- Google Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -84,7 +81,6 @@
             padding: 5px 0 10px 0;
         }
 
-        /* Neon Glow Button Styling */
         .cat-btn {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -101,7 +97,7 @@
             background: #3b82f6;
             color: #ffffff;
             border-color: #60a5fa;
-            box-shadow: 0 0 12px rgba(59, 130, 246, 0.8), 0 0 20px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
             transform: scale(1.03);
         }
 
@@ -123,6 +119,7 @@
             text-decoration: none;
             text-align: center;
             font-size: 12px;
+            cursor: pointer;
         }
 
         .bottom-nav a.active { color: var(--accent-color); font-weight: 600; }
@@ -133,6 +130,7 @@
             padding: 10px 14px;
             margin-bottom: 8px;
             border-left: 4px solid #10b981;
+            font-size: 13px;
         }
     </style>
 </head>
@@ -149,7 +147,7 @@
 
 <div class="container mt-4" style="max-width: 550px;">
 
-    <!-- Auth Box (Login & Register Form) -->
+    <!-- Auth Box -->
     <div id="auth-box" class="card-box p-4 mx-auto my-3">
         <h4 class="fw-bold mb-3 text-center" id="auth-title">Account Login</h4>
         
@@ -159,8 +157,8 @@
         </div>
 
         <div class="mb-3">
-            <label class="small text-sub mb-1">Email / Username</label>
-            <input type="text" id="reg-email" class="form-control" placeholder="Enter email address">
+            <label class="small text-sub mb-1">Email Address</label>
+            <input type="email" id="reg-email" class="form-control" placeholder="Enter email address">
         </div>
 
         <div class="mb-3">
@@ -176,60 +174,86 @@
     </div>
 
     <!-- Main Dashboard View -->
-    <div id="dashboard-view" class="d-none">
-        
-        <!-- Category Scroll Tabs with Neon Glow -->
-        <div class="cat-scroll mb-3">
-            <button class="cat-btn active" onclick="selectCategory(this)">Hotmail</button>
-            <button class="cat-btn" onclick="selectCategory(this)">Gmail</button>
-            <button class="cat-btn" onclick="selectCategory(this)">Facebook</button>
-            <button class="cat-btn" onclick="selectCategory(this)">Edu Gmail</button>
+    <div id="dashboard-view" class="d-none page-section">
+        <div class="cat-scroll mb-3" id="cat-tabs">
+            <!-- Dynamic Category Buttons -->
         </div>
 
-        <!-- Product Card -->
-        <div class="card-box p-3 mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="fw-bold m-0">Outlook.fr Premium</h6>
-                <span class="badge bg-success">72% OFF</span>
-            </div>
-            <h4 class="fw-bold text-primary mb-2">৳0.77 <span class="fs-6 text-sub text-decoration-line-through">৳2.75</span></h4>
-            <ul class="small text-sub ps-3 mb-3">
-                <li>Long-term email accounts</li>
-                <li>High success rate & Instant Delivery</li>
-            </ul>
-            <div class="d-flex justify-content-between align-items-center">
-                <span class="small fw-semibold text-success"><i class="fa-solid fa-box me-1"></i>Stock: <span id="stock-count">2500</span></span>
-                <button class="btn btn-primary fw-bold px-4">Buy Now</button>
-            </div>
+        <!-- Product Display List -->
+        <div id="product-container">
+            <!-- Dynamic Items -->
         </div>
 
-        <!-- Live Activities Section -->
+        <!-- Live Activities -->
         <div class="card-box p-3 mb-3">
-            <h6 class="fw-bold mb-3 text-success"><i class="fa-solid fa-wallet me-2"></i>Live Deposits</h6>
+            <h6 class="fw-bold mb-3 text-success"><i class="fa-solid fa-wallet me-2"></i>Live Deposits (Last 1 Hour)</h6>
             <div id="deposit-list"></div>
         </div>
 
         <div class="card-box p-3 mb-3">
-            <h6 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-cart-shopping me-2"></i>Live Purchases</h6>
+            <h6 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-cart-shopping me-2"></i>Live Purchases (Last 1 Hour)</h6>
             <div id="purchase-list"></div>
         </div>
+    </div>
 
+    <!-- Deposit Page View -->
+    <div id="deposit-view" class="d-none page-section">
+        <div class="card-box p-4">
+            <h5 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-wallet me-2"></i>Add Balance (Deposit)</h5>
+            <div class="alert alert-info py-2 small" style="background:#1e293b; color:#38bdf8; border-color:#0284c7;">
+                সেন্ড মানি করে TrxID সাবমিট করুন:
+                <div class="fw-bold text-warning mt-1" id="payment-numbers-display">
+                    <!-- Dynamic Numbers -->
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="small text-sub mb-1">Payment Method</label>
+                <select id="dep-method" class="form-select">
+                    <option value="bKash">bKash Personal</option>
+                    <option value="Nagad">Nagad Personal</option>
+                    <option value="Rocket">Rocket Personal</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="small text-sub mb-1">Amount (৳ BDT)</label>
+                <input type="number" id="dep-amount" class="form-control" placeholder="e.g. 500">
+            </div>
+
+            <div class="mb-3">
+                <label class="small text-sub mb-1">Transaction ID (TrxID)</label>
+                <input type="text" id="dep-trx" class="form-control" placeholder="e.g. 9N74K2L8">
+            </div>
+
+            <button onclick="submitDeposit()" class="btn btn-success w-100 fw-bold py-2">Submit Request</button>
+        </div>
+    </div>
+
+    <!-- Purchase History View -->
+    <div id="history-view" class="d-none page-section">
+        <div class="card-box p-4">
+            <h5 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-clock-history me-2"></i>Purchase History</h5>
+            <div id="my-orders" class="small">
+                <div class="text-center text-muted py-3">এখনো কোনো কেনাকাটা করা হয়নি।</div>
+            </div>
+        </div>
     </div>
 
 </div>
 
 <!-- Bottom Nav -->
 <div class="bottom-nav d-none" id="nav-bar">
-    <a href="javascript:void(0)" class="active"><i class="fa-solid fa-house d-block fs-6 mb-1"></i>Home</a>
-    <a href="javascript:void(0)"><i class="fa-solid fa-wallet d-block fs-6 mb-1"></i>Deposit</a>
-    <a href="javascript:void(0)"><i class="fa-solid fa-clock-history d-block fs-6 mb-1"></i>History</a>
-    <a href="javascript:void(0)" onclick="logout()"><i class="fa-solid fa-power-off d-block fs-6 mb-1"></i>Logout</a>
+    <a onclick="switchPage('dashboard')" id="nav-home" class="active"><i class="fa-solid fa-house d-block fs-6 mb-1"></i>Home</a>
+    <a onclick="switchPage('deposit')" id="nav-deposit"><i class="fa-solid fa-wallet d-block fs-6 mb-1"></i>Deposit</a>
+    <a onclick="switchPage('history')" id="nav-history"><i class="fa-solid fa-clock-history d-block fs-6 mb-1"></i>History</a>
+    <a onclick="logout()"><i class="fa-solid fa-power-off d-block fs-6 mb-1"></i>Logout</a>
 </div>
 
 <script>
     let isLogin = true;
+    let currentUser = null;
 
-    // Dark / Light Theme Toggle
     function toggleTheme() {
         const body = document.body;
         const icon = document.getElementById('theme-icon');
@@ -242,15 +266,24 @@
         }
     }
 
-    // Category Neon Light Switch
-    function selectCategory(element) {
-        document.querySelectorAll('.cat-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        element.classList.add('active');
+    function switchPage(page) {
+        document.querySelectorAll('.page-section').forEach(sec => sec.classList.add('d-none'));
+        document.querySelectorAll('.bottom-nav a').forEach(a => a.classList.remove('active'));
+
+        if(page === 'dashboard') {
+            document.getElementById('dashboard-view').classList.remove('d-none');
+            document.getElementById('nav-home').classList.add('active');
+            loadProducts();
+        } else if(page === 'deposit') {
+            document.getElementById('deposit-view').classList.remove('d-none');
+            document.getElementById('nav-deposit').classList.add('active');
+            loadPaymentNumbers();
+        } else if(page === 'history') {
+            document.getElementById('history-view').classList.remove('d-none');
+            document.getElementById('nav-history').classList.add('active');
+        }
     }
 
-    // Switch between Login and Register
     function switchAuthMode() {
         isLogin = !isLogin;
         document.getElementById('auth-title').innerText = isLogin ? "Account Login" : "Create Account";
@@ -264,14 +297,34 @@
         const pass = document.getElementById('reg-pass').value.trim();
         if(!email || !pass) return alert('Please fill in required fields!');
 
-        localStorage.setItem('user_logged', 'true');
+        let users = JSON.parse(localStorage.getItem('app_users')) || [];
+        
+        if(!isLogin) {
+            if(users.find(u => u.email === email)) return alert('একাউন্ট তৈরি করা আছে! লগইন করুন।');
+            let newUser = { email: email, pass: pass, balance: 0.00 };
+            users.push(newUser);
+            localStorage.setItem('app_users', JSON.stringify(users));
+            currentUser = newUser;
+        } else {
+            let found = users.find(u => u.email === email && u.pass === pass);
+            if(!found) return alert('ইমেইল বা পাসওয়ার্ড ভুল!');
+            currentUser = found;
+        }
+
+        localStorage.setItem('user_logged', email);
         showDashboard();
     }
 
     function showDashboard() {
+        let email = localStorage.getItem('user_logged');
+        let users = JSON.parse(localStorage.getItem('app_users')) || [];
+        currentUser = users.find(u => u.email === email) || { email: email, balance: 0.00 };
+
+        document.getElementById('user-bal').innerText = Number(currentUser.balance).toFixed(2);
         document.getElementById('auth-box').classList.add('d-none');
         document.getElementById('dashboard-view').classList.remove('d-none');
         document.getElementById('nav-bar').classList.remove('d-none');
+        loadProducts();
     }
 
     function logout() {
@@ -279,32 +332,130 @@
         location.reload();
     }
 
-    // Live Activity Simulation Logic (10s - 30s intervals)
-    const mockEmails = ['md********@g****.com', 'ra********@g****.com', 'ha********@f****.com', 'sh********@g****.com', 'al********@g****.com'];
-    
-    function generateLiveActivities() {
-        const depList = document.getElementById('deposit-list');
-        const purList = document.getElementById('purchase-list');
-        
-        const randEmail = mockEmails[Math.floor(Math.random() * mockEmails.length)];
-        const randAmt = Math.floor(Math.random() * 400) + 100;
-
-        depList.innerHTML = `<div class="live-card d-flex justify-content-between align-items-center">
-            <div><div class="fw-bold small">${randEmail}</div><div class="text-sub fs-6">৳${randAmt}.00</div></div>
-            <span class="badge bg-success">bKash Personal</span>
-        </div>`;
-
-        purList.innerHTML = `<div class="live-card d-flex justify-content-between align-items-center" style="border-left-color: #3b82f6;">
-            <div><div class="fw-bold small">${randEmail}</div><div class="text-sub fs-6">Purchased 1x Outlook.fr</div></div>
-            <span class="badge bg-primary">৳0.77</span>
-        </div>`;
-
-        const randomNext = Math.floor(Math.random() * 20000) + 10000;
-        setTimeout(generateLiveActivities, randomNext);
+    function loadPaymentNumbers() {
+        let nums = JSON.parse(localStorage.getItem('app_pay_numbers')) || { bkash: '01700000000', nagad: '01700000000', rocket: '01700000000' };
+        document.getElementById('payment-numbers-display').innerHTML = `
+            bKash: ${nums.bkash} <br>
+            Nagad: ${nums.nagad} <br>
+            Rocket: ${nums.rocket}
+        `;
     }
 
-    if(localStorage.getItem('user_logged') === 'true') showDashboard();
-    generateLiveActivities();
+    function submitDeposit() {
+        const amt = document.getElementById('dep-amount').value;
+        const trx = document.getElementById('dep-trx').value;
+        const method = document.getElementById('dep-method').value;
+
+        if(!amt || !trx) return alert('পরিমাণ এবং TrxID সঠিকভাবে দিন!');
+
+        let deps = JSON.parse(localStorage.getItem('app_pending_deposits')) || [];
+        deps.push({
+            user: currentUser.email,
+            amount: amt,
+            trx: trx,
+            method: method,
+            time: new Date().toLocaleTimeString()
+        });
+        localStorage.setItem('app_pending_deposits', JSON.stringify(deps));
+
+        alert('ডিপোজিট রিকোয়েস্ট জমা হয়েছে! অ্যাডমিন ভেরিফাই করবেন।');
+        document.getElementById('dep-amount').value = '';
+        document.getElementById('dep-trx').value = '';
+        switchPage('dashboard');
+    }
+
+    function loadProducts() {
+        let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
+        let catTabs = document.getElementById('cat-tabs');
+        let container = document.getElementById('product-container');
+
+        catTabs.innerHTML = '';
+        container.innerHTML = '';
+
+        let categories = Object.keys(store);
+        if(!categories.length) {
+            container.innerHTML = '<div class="text-center text-muted py-4">কোনো প্রোডাক্ট পাবলিশ করা হয়নি।</div>';
+            return;
+        }
+
+        categories.forEach((cat, index) => {
+            catTabs.innerHTML += `<button class="cat-btn ${index===0?'active':''}" onclick="filterCat('${cat}', this)">${cat}</button>`;
+        });
+
+        renderCatItems(categories[0]);
+    }
+
+    function filterCat(cat, btn) {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderCatItems(cat);
+    }
+
+    function renderCatItems(cat) {
+        let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
+        let container = document.getElementById('product-container');
+        container.innerHTML = '';
+
+        if(store[cat]) {
+            store[cat].forEach(item => {
+                let stockCount = item.mails ? item.mails.length : 0;
+                container.innerHTML += `
+                    <div class="card-box p-3 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold m-0">${item.title}</h6>
+                            <span class="badge bg-success">ACTIVE</span>
+                        </div>
+                        <h4 class="fw-bold text-primary mb-2">৳${item.price}</h4>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="small fw-semibold text-success"><i class="fa-solid fa-box me-1"></i>Stock: <span>${stockCount}</span></span>
+                            <button class="btn btn-primary fw-bold px-4" onclick="buyItem('${cat}', '${item.title}')">Buy Now</button>
+                        </div>
+                    </div>`;
+            });
+        }
+    }
+
+    function buyItem(cat, title) {
+        let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
+        let item = store[cat].find(i => i.title === title);
+
+        if(!item || !item.mails || !item.mails.length) return alert('এই প্রোডাক্টটির স্টক খালি আছে!');
+        if(Number(currentUser.balance) < Number(item.price)) return alert('আপনার পর্যাপ্ত ব্যালেন্স নেই! ডিপোজিট করুন।');
+
+        // Deduct Balance & Give Stock
+        currentUser.balance = Number(currentUser.balance) - Number(item.price);
+        let mailData = item.mails.shift(); // Remove 1 mail from stock
+        
+        // Update DB
+        localStorage.setItem('app_store_data', JSON.stringify(store));
+        let users = JSON.parse(localStorage.getItem('app_users')) || [];
+        let uIdx = users.findIndex(u => u.email === currentUser.email);
+        if(uIdx !== -1) users[uIdx].balance = currentUser.balance;
+        localStorage.setItem('app_users', JSON.stringify(users));
+
+        alert(`ক্রয় সফল হয়েছে!\nঅ্যাকাউন্ট ডাটা: ${mailData}`);
+        showDashboard();
+    }
+
+    // Live Activity Simulation
+    const randomUsers = ['tanvir99@gmail.com', 'shakil_bd@yahoo.com', 'rakib_h@gmail.com', 'fahim_22@outlook.com'];
+    function getActivities(k) {
+        let d = JSON.parse(localStorage.getItem(k)) || [];
+        let now = new Date().getTime();
+        return d.filter(i => now - i.time < 3600000);
+    }
+    function renderActivities() {
+        let depList = document.getElementById('deposit-list');
+        let purList = document.getElementById('purchase-list');
+        let deps = getActivities('live_deposits');
+        let purs = getActivities('live_purchases');
+
+        depList.innerHTML = deps.length ? deps.map(d => `<div class="live-card d-flex justify-content-between align-items-center"><div><div class="fw-bold">${d.user}</div><div class="text-sub">${d.text}</div></div><span class="badge bg-success">Success</span></div>`).join('') : '<div class="text-muted small text-center">No deposits in last 1 hour.</div>';
+        purList.innerHTML = purs.length ? purs.map(p => `<div class="live-card d-flex justify-content-between align-items-center" style="border-left-color: #3b82f6;"><div><div class="fw-bold">${p.user}</div><div class="text-sub">${p.text}</div></div><span class="badge bg-primary">Completed</span></div>`).join('') : '<div class="text-muted small text-center">No purchases in last 1 hour.</div>';
+    }
+
+    if(localStorage.getItem('user_logged')) showDashboard();
+    renderActivities();
 </script>
 </body>
 </html>
