@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotmail143</title>
+    <title>Mail Market</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --bg-body: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
-            --border-color: #e2e8f0;
-            --accent-blue: #2563eb;
+            --bg-body: #0b132b;
+            --card-bg: #1c2541;
+            --text-main: #ffffff;
+            --text-sub: #cbd5e1;
+            --border-color: #3a506b;
+            --input-bg: #10172a;
+            --accent-blue: #3b82f6;
             --accent-green: #10b981;
         }
 
@@ -26,76 +27,33 @@
             padding-bottom: 80px;
         }
 
-        /* Top Header Navbar */
-        .top-navbar {
-            background: #ffffff;
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .top-navbar .brand {
-            font-weight: 700;
-            font-size: 20px;
-            color: var(--accent-blue);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .top-navbar .nav-links a {
-            color: var(--text-main);
-            text-decoration: none;
-            margin-left: 15px;
-            font-weight: 500;
-            font-size: 14px;
-        }
-        .top-navbar .nav-links .btn-reg {
-            background: var(--accent-blue);
-            color: #fff !important;
-            padding: 6px 16px;
-            border-radius: 20px;
-        }
-
         .card-box {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border-radius: 16px;
         }
 
-        .form-control {
-            border-radius: 8px;
+        .nav-tab-btn {
+            background: var(--input-bg);
+            color: var(--text-sub);
             border: 1px solid var(--border-color);
-            padding: 10px 14px;
+            border-radius: 20px;
+            padding: 6px 18px;
             font-size: 14px;
+            font-weight: 500;
         }
 
-        /* Live Feeds Section */
-        .feed-header-deposit {
-            background: #065f46;
-            color: white;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
-            padding: 12px 16px;
+        .nav-tab-btn.active {
+            background: var(--accent-blue);
+            color: #fff;
+            border-color: var(--accent-blue);
         }
-        .feed-header-purchase {
-            background: #1d4ed8;
-            color: white;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
-            padding: 12px 16px;
-        }
-        .feed-item {
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px 14px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+
+        .form-control, .form-select {
+            background-color: var(--input-bg) !important;
+            color: #fff !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 10px;
         }
 
         .bottom-nav {
@@ -103,139 +61,166 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: #ffffff;
+            background: var(--card-bg);
             border-top: 1px solid var(--border-color);
             display: flex;
             justify-content: space-around;
-            padding: 8px 0;
+            padding: 10px 0;
             z-index: 1000;
         }
+
         .bottom-nav button {
             background: none;
             border: none;
             color: var(--text-sub);
-            font-size: 11px;
+            text-decoration: none;
+            font-size: 12px;
             text-align: center;
             cursor: pointer;
         }
-        .bottom-nav button.active { color: var(--accent-blue); font-weight: 600; }
+
+        .bottom-nav button.active { color: var(--accent-blue); }
+
+        .feed-item {
+            background: var(--input-bg);
+            border-left: 4px solid var(--accent-green);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+        }
+
+        .mfs-card {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            background: var(--input-bg);
+        }
+        .mfs-card.selected {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .qty-box {
+            display: flex;
+            align-items: center;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .qty-box button {
+            background: #1e293b;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .qty-box input {
+            border: none !important;
+            text-align: center;
+            background: transparent !important;
+            color: #fff !important;
+            font-weight: bold;
+        }
 
         .app-view { display: none; }
         .app-view.active { display: block; }
+        
         #app-main-container { display: none; }
     </style>
 </head>
 <body>
 
-<!-- Top Header -->
-<div class="top-navbar">
-    <a href="#" class="brand"><i class="fa-solid fa-envelope-open-text"></i>Hotmail143</a>
-    <div class="nav-links">
-        <a href="#" onclick="switchView('home')">Home</a>
-        <a href="#" onclick="showLoginTab()">Login</a>
-        <a href="#" class="btn-reg" onclick="showLoginTab()">Register</a>
+<!-- Login / Register Container -->
+<div id="login-section" class="container mt-5" style="max-width: 450px;">
+    <div class="card-box p-4 text-white">
+        <h4 class="fw-bold text-primary mb-3 text-center"><i class="fa-solid fa-user-lock me-2"></i>Welcome to Mail Market</h4>
+        <p class="text-sub small text-center mb-4">Enter your email address to continue</p>
+        <div class="mb-3">
+            <label class="small text-sub mb-1">Enter Your Email Address</label>
+            <input type="email" id="auth-email" class="form-control" placeholder="user@gmail.com">
+        </div>
+        <button onclick="handleLogin()" class="btn btn-primary w-100 fw-bold py-2">Login / Register</button>
     </div>
 </div>
 
-<!-- Login / Register Section (Overlay style like reference image) -->
-<div id="login-section" class="container mt-4" style="max-width: 480px;">
-    <div class="card-box p-4">
-        <div class="text-center bg-primary text-white py-3 rounded-3 mb-4 fw-bold fs-5 shadow-sm">
-            Welcome Back
-        </div>
-        <div class="mb-3">
-            <label class="small text-sub mb-1 fw-semibold">Email Address</label>
-            <div class="input-group">
-                <span class="input-group-text bg-light"><i class="fa-solid fa-envelope text-muted"></i></span>
-                <input type="email" id="auth-email" class="form-control" placeholder="Enter your email">
-            </div>
-        </div>
-        <div class="mb-3">
-            <label class="small text-sub mb-1 fw-semibold">Password</label>
-            <div class="input-group">
-                <span class="input-group-text bg-light"><i class="fa-solid fa-lock text-muted"></i></span>
-                <input type="password" id="auth-pass" class="form-control" placeholder="Enter your password">
-            </div>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mb-4 small">
-            <div>
-                <input type="checkbox" id="remember" class="form-check-input me-1">
-                <label for="remember" class="text-sub">Remember me</label>
-            </div>
-            <a href="#" class="text-decoration-none text-primary">Forgot password?</a>
-        </div>
-        <button onclick="handleLogin()" class="btn btn-primary w-100 fw-bold py-2 mb-3 shadow-sm">Login</button>
-        <div class="text-center small text-sub">
-            Don't have an account? <a href="#" onclick="handleLogin()" class="text-primary fw-semibold text-decoration-none">Register now</a>
-        </div>
-    </div>
-</div>
-
-<!-- Main App Wrapper (After Login) -->
+<!-- Main App Wrapper -->
 <div id="app-main-container">
+    <div class="d-flex justify-content-between align-items-center p-3 card-box rounded-0 border-top-0 border-start-0 border-end-0">
+        <h5 class="m-0 fw-bold text-primary"><i class="fa-solid fa-store me-2"></i>Mail Market</h5>
+        <div class="badge bg-primary fs-6 px-3 py-2 rounded-pill" id="user-bal-display">৳ 0.00</div>
+    </div>
+
     <div class="container mt-3" style="max-width: 600px;">
 
-        <!-- HOME VIEW -->
+        <!-- VIEW 1: HOME -->
         <div id="view-home" class="app-view active">
-            <div class="d-flex justify-content-between align-items-center mb-3 p-3 card-box bg-primary text-white">
-                <div>
-                    <h5 class="fw-bold mb-1">Account Balance</h5>
-                    <h3 class="fw-bold m-0" id="user-bal-display">৳ 0.00</h3>
-                </div>
-                <button onclick="switchView('deposit')" class="btn btn-light text-primary fw-bold px-3">Deposit Now</button>
-            </div>
-
-            <!-- Categories & Products List -->
             <div class="d-flex gap-2 mb-3 overflow-auto pb-1" id="cat-tabs-container"></div>
             <div id="products-list-container" class="mb-4"></div>
 
-            <!-- Live Deposits Box -->
-            <div class="card-box mb-4 overflow-hidden">
-                <div class="feed-header-deposit fw-bold">
-                    <i class="fa-solid fa-wallet me-2"></i>Live Deposits
-                    <div class="small fw-normal text-light" style="font-size: 11px;">Recent deposit activities</div>
-                </div>
-                <div class="p-3" id="live-deposit-feed"></div>
+            <div class="card-box p-3 mb-3">
+                <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-wallet me-2"></i>Live Deposits (Last 1 Hour)</h6>
+                <div id="live-deposit-feed"></div>
             </div>
 
-            <!-- Live Purchases Box -->
-            <div class="card-box mb-4 overflow-hidden">
-                <div class="feed-header-purchase fw-bold">
-                    <i class="fa-solid fa-cart-shopping me-2"></i>Live Purchases
-                    <div class="small fw-normal text-light" style="font-size: 11px;">Recent purchase activities</div>
-                </div>
-                <div class="p-3" id="live-purchase-feed"></div>
+            <div class="card-box p-3 mb-4">
+                <h6 class="fw-bold text-info mb-3"><i class="fa-solid fa-cart-shopping me-2"></i>Live Purchases (Last 1 Hour)</h6>
+                <div id="live-purchase-feed"></div>
             </div>
         </div>
 
-        <!-- DEPOSIT VIEW -->
+        <!-- VIEW 2: DEPOSIT -->
         <div id="view-deposit" class="app-view">
             <div class="card-box p-4 mb-4">
-                <h5 class="fw-bold text-success mb-3"><i class="fa-solid fa-wallet me-2"></i>Add Balance</h5>
-                <div class="mb-3">
-                    <label class="small text-sub mb-1">Select Method</label>
-                    <select id="dep-method" class="form-control">
-                        <option value="bKash Personal">bKash Personal</option>
-                        <option value="Nagad Personal">Nagad Personal</option>
-                        <option value="Rocket Personal">Rocket Personal</option>
-                    </select>
+                <h5 class="fw-bold text-success mb-3"><i class="fa-solid fa-wallet me-2"></i>Deposit Balance</h5>
+                <p class="text-sub small mb-3">Select MFS, click number to copy, send money, and submit details.</p>
+                
+                <div class="row g-2 mb-3">
+                    <div class="col-4">
+                        <div class="mfs-card" onclick="selectMFS('bKash', '01700000000')">
+                            <span class="fw-bold text-danger d-block">bKash</span>
+                            <small class="text-sub">Personal</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="mfs-card" onclick="selectMFS('Nagad', '01800000000')">
+                            <span class="fw-bold text-warning d-block">Nagad</span>
+                            <small class="text-sub">Personal</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="mfs-card" onclick="selectMFS('Rocket', '01900000000')">
+                            <span class="fw-bold d-block" style="color: #a855f7;">Rocket</span>
+                            <small class="text-sub">Personal</small>
+                        </div>
+                    </div>
                 </div>
+
+                <div id="deposit-info-box" class="alert alert-secondary bg-dark text-white border-secondary small mb-3" style="display:none;">
+                    Send Money to <strong id="agent-num-disp" class="text-warning" style="cursor:pointer;" onclick="copyAgentNumber()"></strong> (<span id="selected-mfs-name"></span>).
+                </div>
+
                 <div class="mb-3">
-                    <label class="small text-sub mb-1">Amount (৳)</label>
-                    <input type="number" id="dep-amount" class="form-control" placeholder="50">
+                    <label class="small text-sub mb-1">Amount (৳) - Min ৳10</label>
+                    <input type="number" id="dep-amount" class="form-control" placeholder="10" min="10">
                 </div>
                 <div class="mb-3">
                     <label class="small text-sub mb-1">Transaction ID (TrxID)</label>
-                    <input type="text" id="dep-trx" class="form-control" placeholder="Enter TrxID">
+                    <input type="text" id="dep-trx" class="form-control" placeholder="TrxID">
                 </div>
-                <button onclick="submitDeposit()" class="btn btn-success w-100 fw-bold py-2">Submit Deposit</button>
+
+                <button onclick="submitDeposit()" class="btn btn-success w-100 fw-bold py-2">Submit Deposit Request</button>
             </div>
         </div>
 
-        <!-- HISTORY VIEW -->
+        <!-- VIEW 3: HISTORY -->
         <div id="view-history" class="app-view">
             <div class="card-box p-4 mb-4">
-                <h5 class="fw-bold text-primary mb-3"><i class="fa-solid fa-clock-rotate-left me-2"></i>History</h5>
+                <h5 class="fw-bold text-info mb-3"><i class="fa-solid fa-clock-rotate-left me-2"></i>History</h5>
                 <div id="user-history-container"></div>
             </div>
         </div>
@@ -251,18 +236,34 @@
     </div>
 </div>
 
+<!-- Purchase Modal -->
+<div class="modal fade" id="buyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content card-box text-white p-2">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold" id="modal-product-title">Buy Product</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modal-body-content"></div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     let activeCat = '';
+    let selectedCat = '';
+    let selectedTitle = '';
+    let chosenMFS = '';
+    let currentAgentNum = '';
 
-    // Sample default store data including Out of Stock items for realistic feed matching
     function initDefaultStore() {
         if(!localStorage.getItem('app_store_data')) {
             let defaultData = {
                 "Hotmail": [
                     { title: "Hotmail Fresh Account", price: 2.50, mails: [] },
                     { title: "Hotmail Premium 2024", price: 5.00, mails: [] },
-                    { title: "HOTMAIL Trust", price: 0.77, mails: ["mail1@hotmail.com", "mail2@hotmail.com"] }
+                    { title: "HOTMAIL Trust", price: 0.70, mails: ["mail1@hotmail.com", "mail2@hotmail.com"] }
                 ],
                 "Gmail": [
                     { title: "Edu Gmail for 30 day", price: 16.50, mails: ["edu1@gmail.com"] },
@@ -277,22 +278,24 @@
         return sessionStorage.getItem('logged_user') || '';
     }
 
+    function maskEmail(email) {
+        if(!email || !email.includes('@')) return 'user***@gmail.com';
+        let parts = email.split('@');
+        let name = parts[0];
+        let masked = name.length > 3 ? name.substring(0, 2) + '*******' + name.slice(-2) : name + '***';
+        return masked + '@' + parts[1];
+    }
+
     function checkAuth() {
         let user = getCurrentUser();
         if(!user) {
             document.getElementById('login-section').style.display = 'block';
             document.getElementById('app-main-container').style.display = 'none';
-            document.querySelector('.top-navbar').style.display = 'flex';
         } else {
             document.getElementById('login-section').style.display = 'none';
-            document.querySelector('.top-navbar').style.display = 'none';
             document.getElementById('app-main-container').style.display = 'block';
             initApp();
         }
-    }
-
-    function showLoginTab() {
-        document.getElementById('auth-email').focus();
     }
 
     function handleLogin() {
@@ -303,7 +306,7 @@
         let u = users.find(x => x.email === email);
 
         if(!u) {
-            u = { email: email, balance: 100, history: [] }; // Default initial balance for testing
+            u = { email: email, balance: 100, history: [] };
             users.push(u);
             localStorage.setItem('app_users', JSON.stringify(users));
         }
@@ -325,6 +328,7 @@
         document.getElementById('nav-btn-' + viewName).classList.add('active');
 
         if(viewName === 'history') renderUserHistory();
+        if(viewName === 'home') renderLiveFeeds();
     }
 
     function initApp() {
@@ -341,10 +345,11 @@
         if(cats.length > 0) {
             if(!activeCat || !store[activeCat]) activeCat = cats[0];
             cats.forEach(c => {
-                tabsHtml += `<button class="btn btn-sm ${c === activeCat ? 'btn-primary' : 'btn-light border'} rounded-pill px-3" onclick="switchCategory('${c}')">${c}</button>`;
+                tabsHtml += `<button class="nav-tab-btn ${c === activeCat ? 'active' : ''}" onclick="switchCategory('${c}')">${c}</button>`;
             });
         }
         document.getElementById('cat-tabs-container').innerHTML = tabsHtml;
+
         renderProducts();
         renderLiveFeeds();
     }
@@ -359,7 +364,10 @@
         let container = document.getElementById('products-list-container');
         container.innerHTML = '';
 
-        if(!activeCat || !store[activeCat]) return;
+        if(!activeCat || !store[activeCat] || store[activeCat].length === 0) {
+            container.innerHTML = '<div class="text-center text-sub py-4">No products available.</div>';
+            return;
+        }
 
         store[activeCat].forEach(item => {
             let stockCount = item.mails ? item.mails.length : 0;
@@ -372,171 +380,274 @@
                         <span class="badge ${isOut ? 'bg-danger' : 'bg-success'}">${isOut ? 'OUT OF STOCK' : 'IN STOCK'}</span>
                     </div>
                     <div class="fs-5 fw-bold text-primary mb-2">৳ ${Number(item.price).toFixed(2)}</div>
-                    <div class="small text-sub mb-3">Available: <strong>${stockCount}</strong></div>
-                    <button onclick="buyProduct('${activeCat}', '${item.title}')" class="btn ${isOut ? 'btn-secondary' : 'btn-primary'} w-100 fw-bold" ${isOut ? 'disabled' : ''}>
-                        ${isOut ? 'Out of Stock (Viewable)' : 'Buy Now'}
+                    <div class="small text-sub mb-3"><i class="fa-solid fa-box me-1"></i>Available: <strong>${stockCount}</strong></div>
+                    <button onclick="openBuyModal('${activeCat}', '${item.title}')" class="btn ${isOut ? 'btn-secondary' : 'btn-primary'} w-100 fw-bold" ${isOut ? 'disabled' : ''}>
+                        ${isOut ? 'Out of Stock' : 'Buy Now'}
                     </button>
                 </div>`;
         });
     }
 
-    function buyProduct(cat, title) {
+    function openBuyModal(cat, title) {
+        selectedCat = cat;
+        selectedTitle = title;
+        let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
+        let item = store[cat].find(i => i.title === title);
+
+        document.getElementById('modal-product-title').innerText = item.title;
+        let stockCount = item.mails ? item.mails.length : 0;
+
+        document.getElementById('modal-body-content').innerHTML = `
+            <div class="mb-3">
+                <label class="small text-sub mb-1">Price Per Unit</label>
+                <div class="fw-bold text-warning">৳ ${Number(item.price).toFixed(2)}</div>
+            </div>
+            <div class="mb-3">
+                <label class="small text-sub mb-1">Enter Quantity (Stock Limit: ${stockCount})</label>
+                <div class="qty-box">
+                    <button onclick="adjustQty(-1, ${stockCount})">-</button>
+                    <input type="number" id="buy-qty-input" class="form-control shadow-none" value="1" min="1" max="${stockCount}" oninput="updateTotalPrice(${item.price}, ${stockCount})">
+                    <button onclick="adjustQty(1, ${stockCount})">+</button>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="small text-sub mb-1">Total Cost</label>
+                <div class="fs-5 fw-bold text-success" id="total-price-disp">৳ ${Number(item.price).toFixed(2)}</div>
+            </div>
+            <button onclick="confirmPurchase()" class="btn btn-success w-100 fw-bold py-2">Confirm Purchase</button>`;
+
+        let modal = new bootstrap.Modal(document.getElementById('buyModal'));
+        modal.show();
+    }
+
+    function adjustQty(val, maxStock) {
+        let input = document.getElementById('buy-qty-input');
+        let current = Number(input.value) || 1;
+        let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
+        let item = store[selectedCat].find(i => i.title === selectedTitle);
+        
+        let newQty = current + val;
+        if(newQty < 1) newQty = 1;
+        if(newQty > maxStock) newQty = maxStock;
+        
+        input.value = newQty;
+        updateTotalPrice(item.price, maxStock);
+    }
+
+    function updateTotalPrice(price, maxStock) {
+        let input = document.getElementById('buy-qty-input');
+        let qty = Number(input.value) || 1;
+        if(qty > maxStock) qty = maxStock;
+        if(qty < 1) qty = 1;
+        input.value = qty;
+        document.getElementById('total-price-disp').innerText = `৳ ${(price * qty).toFixed(2)}`;
+    }
+
+    function confirmPurchase() {
+        let qty = Number(document.getElementById('buy-qty-input').value);
+        if(!qty || qty < 1) return alert('Invalid Quantity!');
+
         let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
         let users = JSON.parse(localStorage.getItem('app_users')) || [];
         let currEmail = getCurrentUser();
         let uIdx = users.findIndex(u => u.email === currEmail);
-        let item = store[cat].find(i => i.title === title);
 
-        if(!item || item.mails.length === 0) return alert('Product is out of stock!');
-        if(users[uIdx].balance < item.price) return alert('Insufficient balance!');
+        if(uIdx === -1) return alert('User not logged in!');
 
-        users[uIdx].balance -= item.price;
-        let mail = item.mails.shift();
+        let item = store[selectedCat].find(i => i.title === selectedTitle);
+        if(!item || !item.mails || item.mails.length < qty) return alert('Not enough stock available!');
 
+        let totalCost = item.price * qty;
+        if(Number(users[uIdx].balance || 0) < totalCost) return alert('Insufficient Balance!');
+
+        users[uIdx].balance -= totalCost;
+        let purchasedMails = item.mails.splice(0, qty);
+
+        if(!users[uIdx].history) users[uIdx].history = [];
         users[uIdx].history.unshift({
             type: 'purchase',
             title: item.title,
-            cost: item.price,
-            time: 'Just now'
+            qty: qty,
+            cost: totalCost,
+            data: purchasedMails,
+            timestamp: Date.now(),
+            time: new Date().toLocaleTimeString()
         });
 
-        // Add to global live purchases to reflect instantly
         let livePurchases = JSON.parse(localStorage.getItem('app_live_purchases')) || [];
         livePurchases.unshift({
             user: currEmail,
             title: item.title,
+            qty: qty,
             timestamp: Date.now()
         });
         localStorage.setItem('app_live_purchases', JSON.stringify(livePurchases));
 
         localStorage.setItem('app_store_data', JSON.stringify(store));
         localStorage.setItem('app_users', JSON.stringify(users));
-        
-        alert('Purchase Successful! Account: ' + mail);
+
+        bootstrap.Modal.getInstance(document.getElementById('buyModal')).hide();
+        showDeliveryModal(purchasedMails);
         initApp();
+    }
+
+    function showDeliveryModal(mails) {
+        let mailText = mails.join('\n');
+        let html = `
+            <div class="text-center text-success mb-2"><i class="fa-solid fa-circle-check fs-1"></i></div>
+            <h6 class="text-center fw-bold text-white mb-2">Purchase Successful! (${mails.length} Items)</h6>
+            <textarea id="delivered-mails-text" class="form-control mb-3 font-monospace small" rows="5" readonly>${mailText}</textarea>
+            <button onclick="copyAllMails()" class="btn btn-warning w-100 fw-bold py-2"><i class="fa-solid fa-copy me-1"></i>Copy All Mails</button>`;
+        document.getElementById('modal-body-content').innerHTML = html;
+        let modal = new bootstrap.Modal(document.getElementById('buyModal'));
+        modal.show();
+    }
+
+    function copyAllMails() {
+        let copyText = document.getElementById("delivered-mails-text");
+        copyText.select();
+        navigator.clipboard.writeText(copyText.value);
+        alert("Copied to clipboard!");
+    }
+
+    function selectMFS(methodName, number) {
+        chosenMFS = methodName;
+        currentAgentNum = number;
+        document.querySelectorAll('.mfs-card').forEach(c => c.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+
+        document.getElementById('deposit-info-box').style.display = 'block';
+        document.getElementById('selected-mfs-name').innerText = methodName;
+        document.getElementById('agent-num-disp').innerText = number;
+    }
+
+    function copyAgentNumber() {
+        if(!currentAgentNum) return;
+        navigator.clipboard.writeText(currentAgentNum);
+        alert('Copied: ' + currentAgentNum);
     }
 
     function submitDeposit() {
         let amount = Number(document.getElementById('dep-amount').value);
-        let method = document.getElementById('dep-method').value;
         let trx = document.getElementById('dep-trx').value.trim();
 
-        if(!amount || amount < 10) return alert('Minimum deposit amount is ৳10');
-        if(!trx) return alert('Enter TrxID');
+        if(!chosenMFS) return alert('Select payment method!');
+        if(!amount || amount < 10) return alert('Minimum deposit amount is ৳10!');
+        if(!trx) return alert('Enter Transaction ID (TrxID)!');
 
         let currEmail = getCurrentUser();
         let users = JSON.parse(localStorage.getItem('app_users')) || [];
         let uIdx = users.findIndex(u => u.email === currEmail);
 
-        users[uIdx].balance += amount;
-        users[uIdx].history.unshift({
-            type: 'deposit',
-            amount: amount,
-            method: method,
-            time: 'Just now'
-        });
+        if(uIdx !== -1) {
+            users[uIdx].balance += amount;
+            if(!users[uIdx].history) users[uIdx].history = [];
+            users[uIdx].history.unshift({
+                type: 'deposit',
+                amount: amount,
+                method: chosenMFS + ' Personal',
+                trx: trx,
+                timestamp: Date.now(),
+                time: new Date().toLocaleTimeString()
+            });
 
-        let liveDeps = JSON.parse(localStorage.getItem('app_live_deposits')) || [];
-        liveDeps.unshift({
-            user: currEmail,
-            amount: amount,
-            method: method,
-            timestamp: Date.now()
-        });
-        localStorage.setItem('app_live_deposits', JSON.stringify(liveDeps));
+            let liveDeps = JSON.parse(localStorage.getItem('app_live_deposits')) || [];
+            liveDeps.unshift({
+                user: currEmail,
+                amount: amount,
+                method: chosenMFS + ' Personal',
+                timestamp: Date.now()
+            });
+            localStorage.setItem('app_live_deposits', JSON.stringify(liveDeps));
+            localStorage.setItem('app_users', JSON.stringify(users));
+        }
 
-        localStorage.setItem('app_users', JSON.stringify(users));
         alert('Deposit successful!');
         document.getElementById('dep-amount').value = '';
         document.getElementById('dep-trx').value = '';
         switchView('home');
     }
 
-    function maskEmail(email) {
-        if(!email || !email.includes('@')) return 'user***@gmail.com';
-        let parts = email.split('@');
-        let name = parts[0];
-        let masked = name.length > 3 ? name.substring(0, 2) + '*************' + name.slice(-2) : name + '***';
-        return masked + '@' + parts[1].substring(0, 1) + '****.com';
-    }
-
-    // Realistic Auto-Generated Random Feeds (Within 1 hour window) ensuring low amounts and stock items
     function renderLiveFeeds() {
         let now = Date.now();
+        let oneHour = 60 * 60 * 1000;
         let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
-        
-        // Collect all available product titles (including out of stock ones so they show in live purchase)
         let allProductTitles = [];
         Object.keys(store).forEach(cat => {
             store[cat].forEach(item => allProductTitles.push(item.title));
         });
 
-        let dummyUsers = ['md***@gmail.com', 're***@gmail.com', 'ba***@gmail.com', 'mo***@outlook.com', 'tanvir***@gmail.com', 'fahim***@gmail.com', 'sakib***@gmail.com'];
+        let dummyUsers = ['md***@gmail.com', 're***@gmail.com', 'ba***@gmail.com', 'mo***@outlook.com'];
         let methods = ['bKash Personal', 'Nagad Personal', 'Rocket Personal'];
-        let amounts = [10, 20, 25, 50, 75, 100, 150];
+        let smallAmounts = [10, 20, 25, 50, 75];
 
-        // Persistent random live deposits if empty or old
         let liveDeposits = JSON.parse(localStorage.getItem('app_live_deposits')) || [];
         if(liveDeposits.length === 0) {
-            for(let i=0; i<4; i++) {
+            for(let i=0; i<3; i++) {
                 liveDeposits.push({
                     user: dummyUsers[Math.floor(Math.random() * dummyUsers.length)],
-                    amount: amounts[Math.floor(Math.random() * amounts.length)],
+                    amount: smallAmounts[Math.floor(Math.random() * smallAmounts.length)],
                     method: methods[Math.floor(Math.random() * methods.length)],
-                    timestamp: now - (i * 450 * 1000 + Math.random() * 60000)
+                    timestamp: now - (i * 500 * 1000 + Math.random() * 50000)
                 });
             }
             localStorage.setItem('app_live_deposits', JSON.stringify(liveDeposits));
         }
 
-        // Persistent random live purchases if empty or old
         let livePurchases = JSON.parse(localStorage.getItem('app_live_purchases')) || [];
         if(livePurchases.length === 0 && allProductTitles.length > 0) {
-            for(let i=0; i<4; i++) {
+            for(let i=0; i<3; i++) {
                 livePurchases.push({
                     user: dummyUsers[Math.floor(Math.random() * dummyUsers.length)],
                     title: allProductTitles[Math.floor(Math.random() * allProductTitles.length)],
-                    timestamp: now - (i * 300 * 1000 + Math.random() * 50000)
+                    qty: 1,
+                    timestamp: now - (i * 400 * 1000 + Math.random() * 40000)
                 });
             }
             localStorage.setItem('app_live_purchases', JSON.stringify(livePurchases));
         }
 
-        // Render Deposits Feed (Last 1 hour)
         let depContainer = document.getElementById('live-deposit-feed');
         depContainer.innerHTML = '';
-        let validDeps = liveDeposits.filter(d => (now - d.timestamp) < 3600000);
-        
-        validDeps.forEach(d => {
-            let minsAgo = Math.floor((now - d.timestamp) / 60000);
-            let timeStr = minsAgo <= 1 ? '1 minute ago' : minsAgo + ' minutes ago';
-            depContainer.innerHTML += `
-                <div class="feed-item">
-                    <div>
-                        <div class="fw-bold small text-dark"><i class="fa-solid fa-user-circle text-success me-1"></i>${maskEmail(d.user)}</div>
-                        <div class="text-sub" style="font-size: 12px;">৳${d.amount}.00 - via ${d.method}</div>
-                    </div>
-                    <span class="text-muted" style="font-size: 11px;">${timeStr}</span>
-                </div>`;
-        });
+        let validDeps = liveDeposits.filter(d => (now - d.timestamp) < oneHour);
 
-        // Render Purchases Feed (Last 1 hour - including stock out titles)
+        if(!validDeps.length) {
+            depContainer.innerHTML = '<div class="text-sub small">No recent deposits in the last hour.</div>';
+        } else {
+            validDeps.forEach(d => {
+                let minsAgo = Math.floor((now - d.timestamp) / 60000);
+                let timeStr = minsAgo <= 1 ? '1 minute ago' : minsAgo + ' minutes ago';
+                depContainer.innerHTML += `
+                    <div class="feed-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold small text-white">${maskEmail(d.user)}</div>
+                            <div class="text-sub small">৳${d.amount} - via ${d.method}</div>
+                        </div>
+                        <span class="text-sub" style="font-size: 11px;">${timeStr}</span>
+                    </div>`;
+            });
+        }
+
         let purContainer = document.getElementById('live-purchase-feed');
         purContainer.innerHTML = '';
-        let validPurs = livePurchases.filter(p => (now - p.timestamp) < 3600000);
+        let validPurchases = livePurchases.filter(p => (now - p.timestamp) < oneHour);
 
-        validPurs.forEach(p => {
-            let secsAgo = Math.floor((now - p.timestamp) / 1000);
-            let timeStr = secsAgo < 60 ? secsAgo + ' seconds ago' : Math.floor(secsAgo/60) + ' minutes ago';
-            purContainer.innerHTML += `
-                <div class="feed-item">
-                    <div>
-                        <div class="fw-bold small text-dark"><i class="fa-solid fa-user-circle text-primary me-1"></i>${maskEmail(p.user)}</div>
-                        <div class="text-sub" style="font-size: 12px;">Purchased 1x - ${p.title}</div>
-                    </div>
-                    <span class="text-muted" style="font-size: 11px;">${timeStr}</span>
-                </div>`;
-        });
+        if(!validPurchases.length) {
+            purContainer.innerHTML = '<div class="text-sub small">No recent purchases in the last hour.</div>';
+        } else {
+            validPurchases.forEach(p => {
+                let secsAgo = Math.floor((now - p.timestamp) / 1000);
+                let timeStr = secsAgo < 60 ? secsAgo + ' seconds ago' : Math.floor(secsAgo/60) + ' minutes ago';
+                purContainer.innerHTML += `
+                    <div class="feed-item d-flex justify-content-between align-items-center" style="border-left-color: var(--accent-blue);">
+                        <div>
+                            <div class="fw-bold small text-white">${maskEmail(p.user)}</div>
+                            <div class="text-sub small">Purchased ${p.qty || 1}x - ${p.title}</div>
+                        </div>
+                        <span class="text-sub" style="font-size: 11px;">${timeStr}</span>
+                    </div>`;
+            });
+        }
     }
 
     function renderUserHistory() {
@@ -554,9 +665,9 @@
         u.history.forEach(h => {
             let isDep = h.type === 'deposit';
             container.innerHTML += `
-                <div class="bg-light p-3 rounded mb-2 border-start border-4 ${isDep ? 'border-success' : 'border-primary'}">
+                <div class="bg-dark p-3 rounded mb-2 border-start border-4 ${isDep ? 'border-success' : 'border-primary'}">
                     <div class="d-flex justify-content-between">
-                        <span class="fw-bold">${isDep ? 'Deposit: ৳' + h.amount : h.title}</span>
+                        <span class="fw-bold text-white">${isDep ? 'Deposit: ৳' + h.amount : h.title + ' (' + h.qty + ' pcs)'}</span>
                         <span class="${isDep ? 'text-success' : 'text-danger'} fw-bold">${isDep ? '+' : '-'}${h.cost || h.amount}৳</span>
                     </div>
                     <div class="small text-sub mt-1">${h.method || 'Purchase'} | ${h.time}</div>
