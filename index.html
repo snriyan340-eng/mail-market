@@ -1,4 +1,4 @@
-l<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -121,9 +121,10 @@ l<!DOCTYPE html>
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 16px;
+            font-size: 15px;
             border-radius: 6px;
             margin-bottom: 5px;
+            letter-spacing: 0.5px;
         }
 
         .bkash-bg { background: #e2136e; color: #fff; }
@@ -137,11 +138,11 @@ l<!DOCTYPE html>
             margin-bottom: 8px;
             border-left: 4px solid #10b981;
             font-size: 13px;
-            animation: fadeIn 0.5s ease-in-out;
+            animation: fadeIn 0.4s ease-in-out;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
+            from { opacity: 0; transform: translateY(-4px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
@@ -274,7 +275,7 @@ l<!DOCTYPE html>
     let currentUser = null;
     let selectedMethod = 'bKash';
 
-    // Mask Gmail helper function (e.g. snriyan340@gmail.com -> sn*******40@gmail.com)
+    // Mask Gmail function: snriyan340@gmail.com -> sn*******40@gmail.com
     function maskEmail(email) {
         if (!email || !email.includes('@')) return 'user@gmail.com';
         let parts = email.split('@');
@@ -285,6 +286,24 @@ l<!DOCTYPE html>
             return name.substring(0, 1) + '***' + '@' + domain;
         }
         return name.substring(0, 2) + '*******' + name.substring(name.length - 2) + '@' + domain;
+    }
+
+    // Dynamic unique email generator (No duplication)
+    let usedEmails = new Set();
+    function generateUniqueGmail() {
+        const prefixes = ['shakil', 'tanvir', 'arman', 'rakib', 'kamal', 'muna', 'hasan', 'rifat', 'sohel', 'jamal', 'sumon', 'faysal', 'nahid', 'sabbir', 'imran', 'nayan'];
+        let newEmail = '';
+        
+        do {
+            let name = prefixes[Math.floor(Math.random() * prefixes.length)];
+            let num = Math.floor(100 + Math.random() * 900); // 3-digit random number
+            newEmail = `${name}${num}@gmail.com`;
+        } while (usedEmails.has(newEmail));
+
+        usedEmails.add(newEmail);
+        if (usedEmails.size > 100) usedEmails.clear(); // clear cache safely
+
+        return newEmail;
     }
 
     function initDefaultStore() {
@@ -530,8 +549,10 @@ l<!DOCTYPE html>
         });
     }
 
-    // Dynamic Live Feed Generator with Independent Rotation Timers
-    let sampleGmailList = ['snriyan340@gmail.com', 'tanvir880@gmail.com', 'kamal450@gmail.com', 'rakib992@gmail.com', 'shakil102@gmail.com'];
+    // Global Live Feed Queues with 1-Hour Auto-Expiration
+    let livePurchaseQueue = [];
+    let liveDepositQueue = [];
+    const ONE_HOUR = 60 * 60 * 1000; // 1 hour in ms
 
     function updateLivePurchaseFeed() {
         let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
@@ -539,37 +560,50 @@ l<!DOCTYPE html>
 
         Object.keys(store).forEach(cat => {
             store[cat].forEach(i => {
-                if(i.mails && i.mails.length > 0) {
+                if (i.mails && i.mails.length > 0) {
                     availableItems.push({ cat: cat, title: i.title, price: i.price, maxStock: i.mails.length });
                 }
             });
         });
 
         let purContainer = document.getElementById('purchase-list');
-        if(!availableItems.length) {
+        if (!availableItems.length) {
             purContainer.innerHTML = '<div class="text-sub small text-center">No active purchases.</div>';
             return;
         }
 
-        let fakePurchases = [];
-        for(let i = 0; i < Math.min(3, availableItems.length); i++) {
-            let item = availableItems[i];
-            let maxQty = Math.min(100, item.maxStock);
-            let qty = Math.floor(Math.random() * maxQty) + 1;
-            let totalPrice = (qty * item.price).toFixed(2);
-            let rawEmail = sampleGmailList[Math.floor(Math.random() * sampleGmailList.length)];
-            let masked = maskEmail(rawEmail);
+        let item = availableItems[Math.floor(Math.random() * availableItems.length)];
+        let maxQty = Math.min(100, item.maxStock);
+        let qty = Math.floor(Math.random() * maxQty) + 1;
+        let totalPrice = (qty * item.price).toFixed(2);
+        let rawEmail = generateUniqueGmail();
+        let masked = maskEmail(rawEmail);
 
-            fakePurchases.push(`
+        // Push new purchase to top
+        livePurchaseQueue.unshift({
+            maskedEmail: masked,
+            title: item.title,
+            qty: qty,
+            price: totalPrice,
+            time: Date.now()
+        });
+
+        // Clean up entries older than 1 hour & keep max 5 recent cards
+        let currentTime = Date.now();
+        livePurchaseQueue = livePurchaseQueue.filter(p => (currentTime - p.time) < ONE_HOUR).slice(0, 5);
+
+        let html = '';
+        livePurchaseQueue.forEach(p => {
+            html += `
                 <div class="live-card d-flex justify-content-between align-items-center" style="border-left-color: #3b82f6;">
                     <div>
-                        <div class="fw-bold text-white">${masked}</div>
-                        <div class="text-sub">${item.title} - ${qty} pcs (৳${totalPrice})</div>
+                        <div class="fw-bold text-white">${p.maskedEmail}</div>
+                        <div class="text-sub">${p.title} - ${p.qty} pcs (৳${p.price})</div>
                     </div>
                     <span class="badge bg-primary">Completed</span>
-                </div>`);
-        }
-        purContainer.innerHTML = fakePurchases.join('');
+                </div>`;
+        });
+        purContainer.innerHTML = html;
     }
 
     function updateLiveDepositFeed() {
@@ -577,29 +611,47 @@ l<!DOCTYPE html>
         let methods = ['Added via bKash Personal', 'Added via Nagad', 'Added via Rocket'];
         let amounts = [25, 30, 50, 60, 100, 250, 500];
 
-        let rawEmail = sampleGmailList[Math.floor(Math.random() * sampleGmailList.length)];
+        let rawEmail = generateUniqueGmail();
         let masked = maskEmail(rawEmail);
         let randomMethod = methods[Math.floor(Math.random() * methods.length)];
         let randomAmt = amounts[Math.floor(Math.random() * amounts.length)];
 
-        depContainer.innerHTML = `
-            <div class="live-card d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="fw-bold text-white">${masked}</div>
-                    <div class="text-sub">${randomMethod} - ৳${randomAmt}.00</div>
-                </div>
-                <span class="badge bg-success">Success</span>
-            </div>`;
+        // Push new deposit to top
+        liveDepositQueue.unshift({
+            maskedEmail: masked,
+            method: randomMethod,
+            amount: randomAmt,
+            time: Date.now()
+        });
+
+        // Clean up entries older than 1 hour & keep max 3 recent cards
+        let currentTime = Date.now();
+        liveDepositQueue = liveDepositQueue.filter(d => (currentTime - d.time) < ONE_HOUR).slice(0, 3);
+
+        let html = '';
+        liveDepositQueue.forEach(d => {
+            html += `
+                <div class="live-card d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold text-white">${d.maskedEmail}</div>
+                        <div class="text-sub">${d.method} - ৳${d.amount}.00</div>
+                    </div>
+                    <span class="badge bg-success">Success</span>
+                </div>`;
+        });
+        depContainer.innerHTML = html;
     }
 
     initDefaultStore();
     if(localStorage.getItem('user_logged')) showDashboard();
 
-    // Separate Rotation Timers (15s and 25s offset)
+    // Initial feed rendering
     updateLivePurchaseFeed();
     updateLiveDepositFeed();
-    setInterval(updateLivePurchaseFeed, 15000); 
-    setInterval(updateLiveDepositFeed, 25000);
+
+    // Independent timer intervals
+    setInterval(updateLivePurchaseFeed, 20000); // New purchase every 20s
+    setInterval(updateLiveDepositFeed, 35000);  // New deposit every 35s
 </script>
 </body>
 </html>
