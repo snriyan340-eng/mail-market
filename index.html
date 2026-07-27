@@ -13,20 +13,10 @@
             --bg-body: #0b132b;
             --card-bg: #1c2541;
             --text-main: #ffffff;
-            --text-sub: #94a3b8;
+            --text-sub: #cbd5e1;
             --border-color: #3a506b;
             --input-bg: #10172a;
             --accent-color: #3b82f6;
-        }
-
-        [data-theme="light"] {
-            --bg-body: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-sub: #64748b;
-            --border-color: #e2e8f0;
-            --input-bg: #f1f5f9;
-            --accent-color: #2563eb;
         }
 
         body {
@@ -34,7 +24,6 @@
             color: var(--text-main);
             font-family: 'Poppins', sans-serif;
             padding-bottom: 90px;
-            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .top-navbar {
@@ -43,35 +32,22 @@
             padding: 12px 20px;
         }
 
-        .theme-btn {
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            border-radius: 50%;
-            width: 38px;
-            height: 38px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
         .card-box {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 14px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
         }
 
         .form-control, .form-select {
             background-color: var(--input-bg) !important;
-            color: var(--text-main) !important;
+            color: #ffffff !important;
             border: 1px solid var(--border-color) !important;
             border-radius: 10px;
             padding: 10px 14px;
         }
 
-        .form-control::placeholder { color: var(--text-sub) !important; }
+        .form-control::placeholder { color: #94a3b8 !important; }
 
         .cat-scroll {
             display: flex;
@@ -98,7 +74,6 @@
             color: #ffffff;
             border-color: #60a5fa;
             box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
-            transform: scale(1.03);
         }
 
         .bottom-nav {
@@ -124,6 +99,28 @@
 
         .bottom-nav a.active { color: var(--accent-color); font-weight: 600; }
 
+        /* Method Cards */
+        .mfs-card {
+            border: 2px solid var(--border-color);
+            background: var(--input-bg);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .mfs-card.selected {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .mfs-logo {
+            height: 35px;
+            object-fit: contain;
+            margin-bottom: 5px;
+        }
+
         .live-card {
             background: var(--input-bg);
             border-radius: 10px;
@@ -136,18 +133,17 @@
 </head>
 <body>
 
-<!-- Header Top Bar -->
+<!-- Header -->
 <div class="top-navbar d-flex justify-content-between align-items-center">
     <h5 class="m-0 fw-bold text-primary"><i class="fa-solid fa-store me-2"></i>Mail Market</h5>
     <div class="d-flex align-items-center gap-2">
         <span class="badge bg-primary px-3 py-2 rounded-pill fs-6">৳ <span id="user-bal">0.00</span></span>
-        <button onclick="toggleTheme()" class="theme-btn" id="theme-icon"><i class="fa-solid fa-moon"></i></button>
     </div>
 </div>
 
 <div class="container mt-4" style="max-width: 550px;">
 
-    <!-- Auth Box -->
+    <!-- Auth Form -->
     <div id="auth-box" class="card-box p-4 mx-auto my-3">
         <h4 class="fw-bold mb-3 text-center" id="auth-title">Account Login</h4>
         
@@ -173,16 +169,12 @@
         </p>
     </div>
 
-    <!-- Main Dashboard View -->
+    <!-- Main Dashboard -->
     <div id="dashboard-view" class="d-none page-section">
-        <div class="cat-scroll mb-3" id="cat-tabs">
-            <!-- Dynamic Category Buttons -->
-        </div>
+        <div class="cat-scroll mb-3" id="cat-tabs"></div>
 
-        <!-- Product Display List -->
-        <div id="product-container">
-            <!-- Dynamic Items -->
-        </div>
+        <!-- Product List -->
+        <div id="product-container"></div>
 
         <!-- Live Activities -->
         <div class="card-box p-3 mb-3">
@@ -196,29 +188,50 @@
         </div>
     </div>
 
-    <!-- Deposit Page View -->
+    <!-- Deposit View -->
     <div id="deposit-view" class="d-none page-section">
         <div class="card-box p-4">
-            <h5 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-wallet me-2"></i>Add Balance (Deposit)</h5>
-            <div class="alert alert-info py-2 small" style="background:#1e293b; color:#38bdf8; border-color:#0284c7;">
-                সেন্ড মানি করে TrxID সাবমিট করুন:
-                <div class="fw-bold text-warning mt-1" id="payment-numbers-display">
-                    <!-- Dynamic Numbers -->
+            
+            <!-- Minimum Deposit Notice Box -->
+            <div class="alert alert-primary py-2 px-3 mb-3 d-flex align-items-center justify-content-between" style="background: rgba(59, 130, 246, 0.15); border-color: #3b82f6; color: #60a5fa;">
+                <span class="fw-bold small"><i class="fa-solid fa-circle-info me-2"></i>MINIMUM DEPOSIT</span>
+                <span class="badge bg-primary fs-6">৳ 25</span>
+            </div>
+
+            <div class="mb-3">
+                <label class="small text-sub mb-1">Amount (BDT)</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-white fw-bold">৳</span>
+                    <input type="number" id="dep-amount" class="form-control" placeholder="0.00" min="25" oninput="updatePayBtnAmount()">
                 </div>
             </div>
 
-            <div class="mb-3">
-                <label class="small text-sub mb-1">Payment Method</label>
-                <select id="dep-method" class="form-select">
-                    <option value="bKash">bKash Personal</option>
-                    <option value="Nagad">Nagad Personal</option>
-                    <option value="Rocket">Rocket Personal</option>
-                </select>
+            <label class="small text-sub mb-2">Payment Method</label>
+            <div class="row g-2 mb-3">
+                <div class="col-4">
+                    <div class="mfs-card selected" id="mfs-bkash" onclick="selectMFS('bKash')">
+                        <img src="https://raw.githubusercontent.com/Shakil-Official/Images/main/bkash.png" onerror="this.src='https://placehold.co/80x35?text=bKash'" class="mfs-logo d-block mx-auto">
+                        <span class="small fw-semibold d-block">bKash</span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="mfs-card" id="mfs-nagad" onclick="selectMFS('Nagad')">
+                        <img src="https://raw.githubusercontent.com/Shakil-Official/Images/main/nagad.png" onerror="this.src='https://placehold.co/80x35?text=Nagad'" class="mfs-logo d-block mx-auto">
+                        <span class="small fw-semibold d-block">Nagad</span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="mfs-card" id="mfs-rocket" onclick="selectMFS('Rocket')">
+                        <img src="https://raw.githubusercontent.com/Shakil-Official/Images/main/rocket.png" onerror="this.src='https://placehold.co/80x35?text=Rocket'" class="mfs-logo d-block mx-auto">
+                        <span class="small fw-semibold d-block">Rocket</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label class="small text-sub mb-1">Amount (৳ BDT)</label>
-                <input type="number" id="dep-amount" class="form-control" placeholder="e.g. 500">
+            <!-- Dynamic Send Money Number Box -->
+            <div class="alert alert-warning p-3 mb-3" style="background: rgba(245, 158, 11, 0.15); border-color: #f59e0b; color: #fbbf24;">
+                <div class="small fw-bold mb-1">Send Money (Personal Number):</div>
+                <h5 class="fw-bold m-0 text-white" id="selected-mfs-number">01700000000</h5>
             </div>
 
             <div class="mb-3">
@@ -226,17 +239,15 @@
                 <input type="text" id="dep-trx" class="form-control" placeholder="e.g. 9N74K2L8">
             </div>
 
-            <button onclick="submitDeposit()" class="btn btn-success w-100 fw-bold py-2">Submit Request</button>
+            <button onclick="submitDeposit()" class="btn btn-success w-100 fw-bold py-2" id="submit-pay-btn"><i class="fa-solid fa-lock me-2"></i>Pay ৳0.00 BDT</button>
         </div>
     </div>
 
-    <!-- Purchase History View -->
+    <!-- Purchase History -->
     <div id="history-view" class="d-none page-section">
         <div class="card-box p-4">
-            <h5 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-clock-history me-2"></i>Purchase History</h5>
-            <div id="my-orders" class="small">
-                <div class="text-center text-muted py-3">এখনো কোনো কেনাকাটা করা হয়নি।</div>
-            </div>
+            <h5 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-clock-rotate-left me-2"></i>Statement & History</h5>
+            <div id="my-history-list" class="small"></div>
         </div>
     </div>
 
@@ -246,23 +257,28 @@
 <div class="bottom-nav d-none" id="nav-bar">
     <a onclick="switchPage('dashboard')" id="nav-home" class="active"><i class="fa-solid fa-house d-block fs-6 mb-1"></i>Home</a>
     <a onclick="switchPage('deposit')" id="nav-deposit"><i class="fa-solid fa-wallet d-block fs-6 mb-1"></i>Deposit</a>
-    <a onclick="switchPage('history')" id="nav-history"><i class="fa-solid fa-clock-history d-block fs-6 mb-1"></i>History</a>
+    <a onclick="switchPage('history')" id="nav-history"><i class="fa-solid fa-clock-rotate-left d-block fs-6 mb-1"></i>History</a>
     <a onclick="logout()"><i class="fa-solid fa-power-off d-block fs-6 mb-1"></i>Logout</a>
 </div>
 
 <script>
     let isLogin = true;
     let currentUser = null;
+    let selectedMethod = 'bKash';
 
-    function toggleTheme() {
-        const body = document.body;
-        const icon = document.getElementById('theme-icon');
-        if (body.getAttribute('data-theme') === 'light') {
-            body.removeAttribute('data-theme');
-            icon.innerHTML = '<i class="fa-solid fa-moon"></i>';
-        } else {
-            body.setAttribute('data-theme', 'light');
-            icon.innerHTML = '<i class="fa-solid fa-sun text-warning"></i>';
+    // Initial Demo Store Setup if empty
+    function initDefaultStore() {
+        if(!localStorage.getItem('app_store_data')) {
+            let initialStore = {
+                "Hotmail": [
+                    { title: "Hotmail.com Fresh", price: 2.50, mails: ["usr1@hotmail.com|pass1", "usr2@hotmail.com|pass2"] },
+                    { title: "Hotmail Premium 2024", price: 5.00, mails: ["usr3@hotmail.com|pass3"] }
+                ],
+                "Gmail": [
+                    { title: "Gmail Aged (Old)", price: 12.00, mails: ["guser1@gmail.com|p123"] }
+                ]
+            };
+            localStorage.setItem('app_store_data', JSON.stringify(initialStore));
         }
     }
 
@@ -274,13 +290,15 @@
             document.getElementById('dashboard-view').classList.remove('d-none');
             document.getElementById('nav-home').classList.add('active');
             loadProducts();
+            renderLiveActivities();
         } else if(page === 'deposit') {
             document.getElementById('deposit-view').classList.remove('d-none');
             document.getElementById('nav-deposit').classList.add('active');
-            loadPaymentNumbers();
+            selectMFS(selectedMethod);
         } else if(page === 'history') {
             document.getElementById('history-view').classList.remove('d-none');
             document.getElementById('nav-history').classList.add('active');
+            loadHistory();
         }
     }
 
@@ -301,7 +319,7 @@
         
         if(!isLogin) {
             if(users.find(u => u.email === email)) return alert('একাউন্ট তৈরি করা আছে! লগইন করুন।');
-            let newUser = { email: email, pass: pass, balance: 0.00 };
+            let newUser = { email: email, pass: pass, balance: 0.00, history: [] };
             users.push(newUser);
             localStorage.setItem('app_users', JSON.stringify(users));
             currentUser = newUser;
@@ -318,13 +336,14 @@
     function showDashboard() {
         let email = localStorage.getItem('user_logged');
         let users = JSON.parse(localStorage.getItem('app_users')) || [];
-        currentUser = users.find(u => u.email === email) || { email: email, balance: 0.00 };
+        currentUser = users.find(u => u.email === email) || { email: email, balance: 0.00, history: [] };
 
         document.getElementById('user-bal').innerText = Number(currentUser.balance).toFixed(2);
         document.getElementById('auth-box').classList.add('d-none');
         document.getElementById('dashboard-view').classList.remove('d-none');
         document.getElementById('nav-bar').classList.remove('d-none');
         loadProducts();
+        renderLiveActivities();
     }
 
     function logout() {
@@ -332,35 +351,41 @@
         location.reload();
     }
 
-    function loadPaymentNumbers() {
-        let nums = JSON.parse(localStorage.getItem('app_pay_numbers')) || { bkash: '01700000000', nagad: '01700000000', rocket: '01700000000' };
-        document.getElementById('payment-numbers-display').innerHTML = `
-            bKash: ${nums.bkash} <br>
-            Nagad: ${nums.nagad} <br>
-            Rocket: ${nums.rocket}
-        `;
+    function selectMFS(method) {
+        selectedMethod = method;
+        document.querySelectorAll('.mfs-card').forEach(c => c.classList.remove('selected'));
+        document.getElementById(`mfs-${method.toLowerCase()}`).classList.add('selected');
+
+        let nums = JSON.parse(localStorage.getItem('app_pay_numbers')) || { bkash: '01700000000', nagad: '01800000000', rocket: '01900000000' };
+        document.getElementById('selected-mfs-number').innerText = nums[method.toLowerCase()] || '01700000000';
+    }
+
+    function updatePayBtnAmount() {
+        let amt = document.getElementById('dep-amount').value || 0;
+        document.getElementById('submit-pay-btn').innerHTML = `<i class="fa-solid fa-lock me-2"></i>Pay ৳${Number(amt).toFixed(2)} BDT`;
     }
 
     function submitDeposit() {
-        const amt = document.getElementById('dep-amount').value;
-        const trx = document.getElementById('dep-trx').value;
-        const method = document.getElementById('dep-method').value;
+        const amt = Number(document.getElementById('dep-amount').value);
+        const trx = document.getElementById('dep-trx').value.trim();
 
-        if(!amt || !trx) return alert('পরিমাণ এবং TrxID সঠিকভাবে দিন!');
+        if(!amt || amt < 25) return alert('সর্বনিম্ন ডিপোজিট ২৫ টাকা!');
+        if(!trx) return alert('TrxID ফিল্ডটি পুরন করুন!');
 
         let deps = JSON.parse(localStorage.getItem('app_pending_deposits')) || [];
         deps.push({
             user: currentUser.email,
             amount: amt,
             trx: trx,
-            method: method,
+            method: `${selectedMethod} Payment`,
             time: new Date().toLocaleTimeString()
         });
         localStorage.setItem('app_pending_deposits', JSON.stringify(deps));
 
-        alert('ডিপোজিট রিকোয়েস্ট জমা হয়েছে! অ্যাডমিন ভেরিফাই করবেন।');
+        alert('ডিপোজিট রিকোয়েস্ট জমা হয়েছে! এডমিন ভেরিফাই করে অ্যাপ্রুভ করবেন।');
         document.getElementById('dep-amount').value = '';
         document.getElementById('dep-trx').value = '';
+        updatePayBtnAmount();
         switchPage('dashboard');
     }
 
@@ -374,7 +399,7 @@
 
         let categories = Object.keys(store);
         if(!categories.length) {
-            container.innerHTML = '<div class="text-center text-muted py-4">কোনো প্রোডাক্ট পাবলিশ করা হয়নি।</div>';
+            container.innerHTML = '<div class="text-center text-sub py-4 fw-semibold">কোনো প্রোডাক্ট পাবলিশ করা হয়নি।</div>';
             return;
         }
 
@@ -400,14 +425,14 @@
             store[cat].forEach(item => {
                 let stockCount = item.mails ? item.mails.length : 0;
                 container.innerHTML += `
-                    <div class="card-box p-3 mb-4">
+                    <div class="card-box p-3 mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="fw-bold m-0">${item.title}</h6>
-                            <span class="badge bg-success">ACTIVE</span>
+                            <h6 class="fw-bold m-0 text-white">${item.title}</h6>
+                            <span class="badge ${stockCount > 0 ? 'bg-success' : 'bg-danger'}">${stockCount > 0 ? 'IN STOCK' : 'OUT OF STOCK'}</span>
                         </div>
-                        <h4 class="fw-bold text-primary mb-2">৳${item.price}</h4>
+                        <h4 class="fw-bold text-primary mb-2">৳${Number(item.price).toFixed(2)}</h4>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="small fw-semibold text-success"><i class="fa-solid fa-box me-1"></i>Stock: <span>${stockCount}</span></span>
+                            <span class="small fw-semibold text-sub"><i class="fa-solid fa-box me-1 text-warning"></i>Available: <strong class="text-white">${stockCount}</strong></span>
                             <button class="btn btn-primary fw-bold px-4" onclick="buyItem('${cat}', '${item.title}')">Buy Now</button>
                         </div>
                     </div>`;
@@ -422,40 +447,106 @@
         if(!item || !item.mails || !item.mails.length) return alert('এই প্রোডাক্টটির স্টক খালি আছে!');
         if(Number(currentUser.balance) < Number(item.price)) return alert('আপনার পর্যাপ্ত ব্যালেন্স নেই! ডিপোজিট করুন।');
 
-        // Deduct Balance & Give Stock
         currentUser.balance = Number(currentUser.balance) - Number(item.price);
-        let mailData = item.mails.shift(); // Remove 1 mail from stock
+        let mailData = item.mails.shift(); 
         
-        // Update DB
+        if(!currentUser.history) currentUser.history = [];
+        currentUser.history.push({
+            title: item.title,
+            price: item.price,
+            data: mailData,
+            time: new Date().toLocaleTimeString(),
+            type: 'purchase'
+        });
+
         localStorage.setItem('app_store_data', JSON.stringify(store));
         let users = JSON.parse(localStorage.getItem('app_users')) || [];
         let uIdx = users.findIndex(u => u.email === currentUser.email);
-        if(uIdx !== -1) users[uIdx].balance = currentUser.balance;
+        if(uIdx !== -1) users[uIdx] = currentUser;
         localStorage.setItem('app_users', JSON.stringify(users));
 
-        alert(`ক্রয় সফল হয়েছে!\nঅ্যাকাউন্ট ডাটা: ${mailData}`);
+        alert(`ক্রয় সফল হয়েছে!\nডাটা: ${mailData}`);
         showDashboard();
     }
 
-    // Live Activity Simulation
-    const randomUsers = ['tanvir99@gmail.com', 'shakil_bd@yahoo.com', 'rakib_h@gmail.com', 'fahim_22@outlook.com'];
-    function getActivities(k) {
-        let d = JSON.parse(localStorage.getItem(k)) || [];
-        let now = new Date().getTime();
-        return d.filter(i => now - i.time < 3600000);
-    }
-    function renderActivities() {
-        let depList = document.getElementById('deposit-list');
-        let purList = document.getElementById('purchase-list');
-        let deps = getActivities('live_deposits');
-        let purs = getActivities('live_purchases');
+    function loadHistory() {
+        let container = document.getElementById('my-history-list');
+        container.innerHTML = '';
+        if(!currentUser.history || !currentUser.history.length) {
+            container.innerHTML = '<div class="text-center text-sub py-3">কোনো স্টেটমেন্ট বা কেনাকাটা নেই।</div>';
+            return;
+        }
 
-        depList.innerHTML = deps.length ? deps.map(d => `<div class="live-card d-flex justify-content-between align-items-center"><div><div class="fw-bold">${d.user}</div><div class="text-sub">${d.text}</div></div><span class="badge bg-success">Success</span></div>`).join('') : '<div class="text-muted small text-center">No deposits in last 1 hour.</div>';
-        purList.innerHTML = purs.length ? purs.map(p => `<div class="live-card d-flex justify-content-between align-items-center" style="border-left-color: #3b82f6;"><div><div class="fw-bold">${p.user}</div><div class="text-sub">${p.text}</div></div><span class="badge bg-primary">Completed</span></div>`).join('') : '<div class="text-muted small text-center">No purchases in last 1 hour.</div>';
+        currentUser.history.reverse().forEach(h => {
+            if(h.type === 'purchase') {
+                container.innerHTML += `
+                    <div class="bg-dark p-2 rounded mb-2 border-start border-4 border-primary">
+                        <div class="d-flex justify-content-between"><strong>${h.title}</strong> <span class="text-danger">-৳${h.price}</span></div>
+                        <div class="text-sub small">Data: ${h.data}</div>
+                    </div>`;
+            } else {
+                container.innerHTML += `
+                    <div class="bg-dark p-2 rounded mb-2 border-start border-4 border-success">
+                        <div class="d-flex justify-content-between"><strong>Deposit Credit</strong> <span class="text-success">+৳${h.amount}</span></div>
+                        <div class="text-sub small">${h.source}</div>
+                    </div>`;
+            }
+        });
     }
 
+    // Dynamic Live Feed Generator (Only from Available Stock)
+    function renderLiveActivities() {
+        let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
+        let availableItems = [];
+
+        Object.keys(store).forEach(cat => {
+            store[cat].forEach(i => {
+                if(i.mails && i.mails.length > 0) {
+                    availableItems.push({ cat: cat, title: i.title, price: i.price, maxStock: i.mails.length });
+                }
+            });
+        });
+
+        let purContainer = document.getElementById('purchase-list');
+        let depContainer = document.getElementById('deposit-list');
+
+        if(!availableItems.length) {
+            purContainer.innerHTML = '<div class="text-sub small text-center">স্টক খালি থাকায় কোনো পারচেজ ফিড নেই।</div>';
+        } else {
+            let fakePurchases = [];
+            let sampleUsers = ['user_88**', 'rakib_**', 'tanvir_**', 'muna_**', 'kamal_**'];
+
+            for(let i = 0; i < Math.min(3, availableItems.length); i++) {
+                let item = availableItems[i];
+                let maxQty = Math.min(100, item.maxStock);
+                let qty = Math.floor(Math.random() * maxQty) + 1;
+                let totalPrice = (qty * item.price).toFixed(2);
+                let u = sampleUsers[Math.floor(Math.random() * sampleUsers.length)];
+
+                fakePurchases.push(`
+                    <div class="live-card d-flex justify-content-between align-items-center" style="border-left-color: #3b82f6;">
+                        <div>
+                            <div class="fw-bold text-white">${u}</div>
+                            <div class="text-sub">${item.title} - ${qty} pcs (৳${totalPrice})</div>
+                        </div>
+                        <span class="badge bg-primary">Completed</span>
+                    </div>`);
+            }
+            purContainer.innerHTML = fakePurchases.join('');
+        }
+
+        depContainer.innerHTML = `
+            <div class="live-card d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="fw-bold text-white">shakil_**</div>
+                    <div class="text-sub">bKash Payment - ৳500.00</div>
+                </div>
+                <span class="badge bg-success">Success</span>
+            </div>`;
+    }
+
+    initDefaultStore();
     if(localStorage.getItem('user_logged')) showDashboard();
-    renderActivities();
 </script>
 </body>
 </html>
