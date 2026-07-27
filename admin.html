@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Mail Market</title>
+    <title>Admin Dashboard - Mail Market</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,6 +16,10 @@
             --text-sub: #cbd5e1;
             --border-color: #3a506b;
             --input-bg: #10172a;
+            --accent-blue: #3b82f6;
+            --accent-yellow: #f59e0b;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
         }
 
         body {
@@ -25,11 +29,30 @@
             padding-bottom: 50px;
         }
 
+        .top-navbar {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+        }
+
         .card-box {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 14px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 26px;
+            font-weight: 700;
         }
 
         .form-control, .form-select {
@@ -37,123 +60,305 @@
             color: #ffffff !important;
             border: 1px solid var(--border-color) !important;
             border-radius: 10px;
-            padding: 10px 14px;
+            padding: 12px 14px;
         }
 
         .form-control::placeholder { color: #94a3b8 !important; }
+
+        .btn-yellow {
+            background-color: #f59e0b;
+            color: #000;
+            font-weight: 700;
+            border-radius: 10px;
+        }
+        .btn-yellow:hover { background-color: #d97706; color: #000; }
+
+        .btn-green {
+            background-color: #10b981;
+            color: #fff;
+            font-weight: 700;
+            border-radius: 10px;
+        }
+        .btn-green:hover { background-color: #059669; color: #fff; }
+
+        .table-dark-custom {
+            background: var(--input-bg);
+            color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table-dark-custom th { background: #1e293b; color: #94a3b8; border-color: var(--border-color); }
+        .table-dark-custom td { border-color: var(--border-color); }
+
+        /* Admin Lock Overlay */
+        #admin-lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(11, 19, 43, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
 
-<div class="top-navbar bg-dark py-3 px-4 border-bottom border-secondary d-flex justify-content-between align-items-center">
-    <h4 class="m-0 fw-bold text-danger"><i class="fa-solid fa-user-shield me-2"></i>Admin Dashboard</h4>
-    <a href="index.html" class="btn btn-outline-light btn-sm fw-bold">Go to App</a>
+<!-- Admin Password Protection Modal -->
+<div id="admin-lock-screen">
+    <div class="card-box p-4 text-center" style="max-width: 380px; width: 90%;">
+        <div class="mb-3">
+            <i class="fa-solid fa-lock text-warning fs-1"></i>
+        </div>
+        <h5 class="fw-bold text-white mb-2">Admin Access Required</h5>
+        <p class="text-sub small mb-3">Please enter your admin password to continue</p>
+        <input type="password" id="admin-pass-input" class="form-control text-center mb-3" placeholder="Enter Password">
+        <button onclick="checkAdminPassword()" class="btn btn-primary w-100 fw-bold py-2">Unlock Panel</button>
+    </div>
 </div>
 
-<div class="container mt-4" style="max-width: 750px;">
+<!-- Header -->
+<div class="top-navbar d-flex justify-content-between align-items-center">
+    <h4 class="m-0 fw-bold text-primary"><i class="fa-solid fa-shield-halved me-2"></i>Admin Dashboard</h4>
+    <button onclick="lockPanel()" class="btn btn-danger btn-sm fw-bold px-3 py-2" style="border-radius: 8px;">Lock Panel</button>
+</div>
 
-    <!-- Set MFS Numbers -->
-    <div class="card-box p-4 mb-4">
-        <h5 class="fw-bold mb-3 text-warning"><i class="fa-solid fa-phone me-2"></i>Set Send Money Numbers</h5>
-        <div class="row g-3">
-            <div class="col-md-4">
-                <label class="small text-sub mb-1">bKash Personal Number</label>
-                <input type="text" id="num-bkash" class="form-control" placeholder="017xxxxxxxx">
-            </div>
-            <div class="col-md-4">
-                <label class="small text-sub mb-1">Nagad Personal Number</label>
-                <input type="text" id="num-nagad" class="form-control" placeholder="018xxxxxxxx">
-            </div>
-            <div class="col-md-4">
-                <label class="small text-sub mb-1">Rocket Personal Number</label>
-                <input type="text" id="num-rocket" class="form-control" placeholder="019xxxxxxxx">
+<div class="container mt-4" style="max-width: 650px;">
+
+    <!-- Top Statistics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-4">
+            <div class="stat-card">
+                <span class="small text-sub d-block mb-1 fw-semibold">Total Users</span>
+                <div class="stat-number text-info" id="stat-users">0</div>
             </div>
         </div>
-        <button onclick="saveNumbers()" class="btn btn-warning fw-bold mt-3 px-4">Save Numbers</button>
+        <div class="col-4">
+            <div class="stat-card">
+                <span class="small text-sub d-block mb-1 fw-semibold">Pending Dep.</span>
+                <div class="stat-number text-warning" id="stat-pending">0</div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="stat-card">
+                <span class="small text-sub d-block mb-1 fw-semibold">Total Stock</span>
+                <div class="stat-number text-success" id="stat-stock">0</div>
+            </div>
+        </div>
     </div>
 
-    <!-- Add Products / Stock -->
+    <!-- Add Mails / Stock Data -->
     <div class="card-box p-4 mb-4">
-        <h5 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-plus me-2"></i>Add / Manage Products</h5>
+        <h6 class="fw-bold mb-3 text-warning"><i class="fa-solid fa-cloud-arrow-up me-2"></i>Add Mails / Stock Data</h6>
         
-        <div class="row g-3 mb-3">
-            <div class="col-md-4">
-                <label class="small text-sub mb-1">Category Name</label>
-                <input type="text" id="prod-cat" class="form-control" placeholder="e.g. Hotmail / Gmail">
-            </div>
-            <div class="col-md-5">
-                <label class="small text-sub mb-1">Product Title</label>
-                <input type="text" id="prod-title" class="form-control" placeholder="e.g. Hotmail Fresh 2024">
-            </div>
-            <div class="col-md-3">
-                <label class="small text-sub mb-1">Price Per Unit (৳)</label>
-                <input type="number" id="prod-price" class="form-control" placeholder="2.50">
-            </div>
+        <div class="mb-3">
+            <label class="small text-sub mb-1">Select Category Item</label>
+            <select id="stock-item-select" class="form-select"></select>
         </div>
 
         <div class="mb-3">
-            <label class="small text-sub mb-1">Product Mail Data (Line by Line)</label>
-            <textarea id="prod-mails" class="form-control" rows="4" placeholder="email1@domain.com|password&#10;email2@domain.com|password"></textarea>
+            <label class="small text-sub mb-1">Paste Mails (Line by line format: mail|pass|recovery)</label>
+            <textarea id="stock-mails-input" class="form-control" rows="4" placeholder="user1@outlook.com|pass123&#10;user2@outlook.com|pass456"></textarea>
         </div>
 
-        <button onclick="addProduct()" class="btn btn-primary fw-bold px-4">Publish / Update Stock</button>
+        <button onclick="uploadStockMails()" class="btn btn-yellow w-100 py-2">Upload Stock Mails</button>
+    </div>
+
+    <!-- Publish New Category Item -->
+    <div class="card-box p-4 mb-4">
+        <h6 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-folder-plus me-2"></i>Publish New Category Item</h6>
+        
+        <div class="mb-3">
+            <label class="small text-sub mb-1">Category (Choose from Dropdown or Write New)</label>
+            <div class="input-group">
+                <select id="cat-dropdown" class="form-select" onchange="syncCategoryInput(this)">
+                    <option value="">-- Select Existing Category --</option>
+                </select>
+            </div>
+            <input type="text" id="cat-manual-input" class="form-control mt-2" placeholder="Or type new category name e.g. Outlook">
+        </div>
+
+        <div class="mb-3">
+            <label class="small text-sub mb-1">Item Title</label>
+            <input type="text" id="item-title-input" class="form-control" placeholder="e.g. Outlook.fr Premium">
+        </div>
+
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <label class="small text-sub mb-1">Price (৳)</label>
+                <input type="number" step="0.01" id="item-price-input" class="form-control" placeholder="0.77">
+            </div>
+            <div class="col-6">
+                <label class="small text-sub mb-1">Initial Stock Count</label>
+                <input type="number" id="item-stock-dummy" class="form-control" placeholder="0" disabled>
+            </div>
+        </div>
+
+        <button onclick="publishNewItem()" class="btn btn-green w-100 py-2">Publish Item</button>
     </div>
 
     <!-- Pending Deposit Requests -->
     <div class="card-box p-4 mb-4">
-        <h5 class="fw-bold mb-3 text-success"><i class="fa-solid fa-clock me-2"></i>Pending Deposit Requests</h5>
-        <div id="pending-dep-list" class="small"></div>
+        <h6 class="fw-bold mb-3 text-success"><i class="fa-solid fa-wallet me-2"></i>Pending Deposit Requests</h6>
+        <div id="pending-deposits-list" class="small"></div>
     </div>
 
-    <!-- Manual Balance Credit -->
+    <!-- Add Custom Payment Method -->
     <div class="card-box p-4 mb-4">
-        <h5 class="fw-bold mb-3 text-info"><i class="fa-solid fa-wallet me-2"></i>Manual User Balance Credit</h5>
-        <div class="row g-3">
-            <div class="col-md-6">
-                <label class="small text-sub mb-1">Target User Email</label>
-                <input type="email" id="target-user-email" class="form-control" placeholder="user@gmail.com">
-            </div>
-            <div class="col-md-6">
-                <label class="small text-sub mb-1">Amount to Add (৳)</label>
-                <input type="number" id="target-user-amt" class="form-control" placeholder="100.00">
-            </div>
+        <h6 class="fw-bold mb-3 text-info"><i class="fa-solid fa-credit-card me-2"></i>Manage Payment Numbers & Methods</h6>
+        
+        <div class="mb-3">
+            <label class="small text-sub mb-1">Method Name</label>
+            <input type="text" id="pay-method-name" class="form-control" placeholder="e.g. bKash / Nagad / Upay">
         </div>
-        <button onclick="manualAddBalance()" class="btn btn-info fw-bold mt-3 text-white px-4">Credit Balance</button>
+        <div class="mb-3">
+            <label class="small text-sub mb-1">Send Money Number</label>
+            <input type="text" id="pay-method-num" class="form-control" placeholder="017xxxxxxxx">
+        </div>
+
+        <button onclick="savePaymentMethod()" class="btn btn-primary w-100 fw-bold py-2">Save Payment Method</button>
+    </div>
+
+    <!-- Live Stock Inventory Viewer -->
+    <div class="card-box p-4 mb-4">
+        <h6 class="fw-bold mb-3 text-white"><i class="fa-solid fa-boxes-stacked me-2"></i>Live Inventory Stock</h6>
+        <div class="table-responsive">
+            <table class="table table-dark-custom align-middle text-center mb-0 small">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Item Title</th>
+                        <th>Price</th>
+                        <th>In Stock</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- User Management List -->
+    <div class="card-box p-4">
+        <h6 class="fw-bold mb-3 text-info"><i class="fa-solid fa-users me-2"></i>Registered Users List</h6>
+        <div id="users-list-container" class="small"></div>
     </div>
 
 </div>
 
 <script>
-    function loadAdminData() {
-        // Load Pay Numbers
-        let nums = JSON.parse(localStorage.getItem('app_pay_numbers')) || { bkash: '01700000000', nagad: '01800000000', rocket: '01900000000' };
-        document.getElementById('num-bkash').value = nums.bkash || '';
-        document.getElementById('num-nagad').value = nums.nagad || '';
-        document.getElementById('num-rocket').value = nums.rocket || '';
+    const ADMIN_PASS = "HABIBI@RAJU143";
 
-        // Load Pending Deposits
-        loadPendingDeposits();
+    function checkAdminPassword() {
+        let input = document.getElementById('admin-pass-input').value.trim();
+        if(input === ADMIN_PASS) {
+            sessionStorage.setItem('admin_unlocked', 'true');
+            document.getElementById('admin-lock-screen').style.display = 'none';
+            refreshDashboard();
+        } else {
+            alert('Incorrect Password!');
+        }
     }
 
-    function saveNumbers() {
-        let nums = {
-            bkash: document.getElementById('num-bkash').value.trim(),
-            nagad: document.getElementById('num-nagad').value.trim(),
-            rocket: document.getElementById('num-rocket').value.trim()
-        };
-        localStorage.setItem('app_pay_numbers', JSON.stringify(nums));
-        alert('MFS Numbers updated successfully!');
+    function lockPanel() {
+        sessionStorage.removeItem('admin_unlocked');
+        location.reload();
     }
 
-    function addProduct() {
-        let cat = document.getElementById('prod-cat').value.trim();
-        let title = document.getElementById('prod-title').value.trim();
-        let price = Number(document.getElementById('prod-price').value);
-        let rawMails = document.getElementById('prod-mails').value.trim();
+    // Auto check login session on load
+    if(sessionStorage.getItem('admin_unlocked') === 'true') {
+        document.getElementById('admin-lock-screen').style.display = 'none';
+    }
 
-        if(!cat || !title || !price || !rawMails) return alert('Please fill in all product fields!');
+    function refreshDashboard() {
+        let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
+        let users = JSON.parse(localStorage.getItem('app_users')) || [];
+        let deps = JSON.parse(localStorage.getItem('app_pending_deposits')) || [];
 
-        let mailList = rawMails.split('\n').map(m => m.trim()).filter(m => m.length > 0);
+        // 1. Stats Counter
+        document.getElementById('stat-users').innerText = users.length;
+        document.getElementById('stat-pending').innerText = deps.length;
+
+        let totalStockCount = 0;
+        Object.keys(store).forEach(cat => {
+            store[cat].forEach(i => {
+                if(i.mails) totalStockCount += i.mails.length;
+            });
+        });
+        document.getElementById('stat-stock').innerText = totalStockCount.toLocaleString();
+
+        // 2. Populate Item Select Box & Inventory Table
+        let stockSelect = document.getElementById('stock-item-select');
+        let catDropdown = document.getElementById('cat-dropdown');
+        let inventoryBody = document.getElementById('inventory-table-body');
+
+        stockSelect.innerHTML = '';
+        catDropdown.innerHTML = '<option value="">-- Select Existing Category --</option>';
+        inventoryBody.innerHTML = '';
+
+        let categories = Object.keys(store);
+
+        categories.forEach(cat => {
+            catDropdown.innerHTML += `<option value="${cat}">${cat}</option>`;
+            
+            store[cat].forEach(item => {
+                let count = item.mails ? item.mails.length : 0;
+                stockSelect.innerHTML += `<option value="${cat}|${item.title}">${item.title} (${cat}) - ${count} available</option>`;
+                
+                inventoryBody.innerHTML += `
+                    <tr>
+                        <td><span class="badge bg-secondary">${cat}</span></td>
+                        <td class="fw-bold">${item.title}</td>
+                        <td class="text-warning">৳${Number(item.price).toFixed(2)}</td>
+                        <td><span class="badge ${count > 0 ? 'bg-success' : 'bg-danger'}">${count} pcs</span></td>
+                    </tr>`;
+            });
+        });
+
+        // 3. Render Pending Deposits
+        renderPendingDeposits(deps);
+
+        // 4. Render Registered Users
+        renderUsersList(users);
+    }
+
+    function syncCategoryInput(selectObj) {
+        if(selectObj.value) {
+            document.getElementById('cat-manual-input').value = selectObj.value;
+        }
+    }
+
+    function uploadStockMails() {
+        let selectVal = document.getElementById('stock-item-select').value;
+        let rawMails = document.getElementById('stock-mails-input').value.trim();
+
+        if(!selectVal || !rawMails) return alert('Select item and paste mail data!');
+
+        let [cat, title] = selectVal.split('|');
+        let newMails = rawMails.split('\n').map(m => m.trim()).filter(m => m.length > 0);
+
+        let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
+        let item = store[cat].find(i => i.title === title);
+
+        if(item) {
+            if(!item.mails) item.mails = [];
+            item.mails.push(...newMails);
+            localStorage.setItem('app_store_data', JSON.stringify(store));
+            alert(`Added ${newMails.length} mails successfully!`);
+            document.getElementById('stock-mails-input').value = '';
+            refreshDashboard();
+        }
+    }
+
+    function publishNewItem() {
+        let cat = document.getElementById('cat-manual-input').value.trim();
+        let title = document.getElementById('item-title-input').value.trim();
+        let price = Number(document.getElementById('item-price-input').value);
+
+        if(!cat || !title || !price) return alert('Please fill in category, title and price!');
 
         let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
         if(!store[cat]) store[cat] = [];
@@ -161,27 +366,41 @@
         let existing = store[cat].find(i => i.title === title);
         if(existing) {
             existing.price = price;
-            existing.mails.push(...mailList);
         } else {
-            store[cat].push({ title: title, price: price, mails: mailList });
+            store[cat].push({ title: title, price: price, mails: [] });
         }
 
         localStorage.setItem('app_store_data', JSON.stringify(store));
-        alert('Stock updated successfully!');
-        
-        document.getElementById('prod-cat').value = '';
-        document.getElementById('prod-title').value = '';
-        document.getElementById('prod-price').value = '';
-        document.getElementById('prod-mails').value = '';
+        alert('Product Item Published Successfully!');
+
+        document.getElementById('cat-manual-input').value = '';
+        document.getElementById('item-title-input').value = '';
+        document.getElementById('item-price-input').value = '';
+        refreshDashboard();
     }
 
-    function loadPendingDeposits() {
-        let deps = JSON.parse(localStorage.getItem('app_pending_deposits')) || [];
-        let container = document.getElementById('pending-dep-list');
+    function savePaymentMethod() {
+        let name = document.getElementById('pay-method-name').value.trim().toLowerCase();
+        let num = document.getElementById('pay-method-num').value.trim();
+
+        if(!name || !num) return alert('Enter method name and phone number!');
+
+        let nums = JSON.parse(localStorage.getItem('app_pay_numbers')) || {};
+        nums[name] = num;
+
+        localStorage.setItem('app_pay_numbers', JSON.stringify(nums));
+        alert(`Payment method '${name.toUpperCase()}' saved with number ${num}!`);
+
+        document.getElementById('pay-method-name').value = '';
+        document.getElementById('pay-method-num').value = '';
+    }
+
+    function renderPendingDeposits(deps) {
+        let container = document.getElementById('pending-deposits-list');
         container.innerHTML = '';
 
         if(!deps.length) {
-            container.innerHTML = '<div class="text-sub py-2">No pending deposit requests.</div>';
+            container.innerHTML = '<div class="text-sub text-center py-2">No pending deposit requests.</div>';
             return;
         }
 
@@ -190,8 +409,8 @@
                 <div class="bg-dark p-3 rounded mb-2 d-flex justify-content-between align-items-center border-start border-4 border-warning">
                     <div>
                         <div class="fw-bold text-white">${d.user}</div>
-                        <div class="text-sub">TrxID: <span class="text-warning">${d.trx}</span> | Amount: <strong class="text-success">৳${d.amount}</strong></div>
-                        <div class="small text-info">${d.method || 'Added via bKash Personal'} (${d.time})</div>
+                        <div class="text-sub">TrxID: <span class="text-warning">${d.trx}</span> | Amt: <strong class="text-success">৳${d.amount}</strong></div>
+                        <div class="small text-info">${d.method || 'Added via MFS'} (${d.time})</div>
                     </div>
                     <div class="d-flex gap-2">
                         <button onclick="approveDeposit(${idx})" class="btn btn-sm btn-success fw-bold">Approve</button>
@@ -209,71 +428,56 @@
         let users = JSON.parse(localStorage.getItem('app_users')) || [];
         let uIdx = users.findIndex(u => u.email === req.user);
 
-        if(uIdx === -1) {
-            alert('User account not found!');
-            return;
+        if(uIdx !== -1) {
+            users[uIdx].balance = Number(users[uIdx].balance || 0) + Number(req.amount);
+            if(!users[uIdx].history) users[uIdx].history = [];
+            users[uIdx].history.push({
+                type: 'deposit',
+                amount: req.amount,
+                method: req.method || 'Added via MFS',
+                trx: req.trx,
+                time: new Date().toLocaleTimeString()
+            });
+            localStorage.setItem('app_users', JSON.stringify(users));
         }
 
-        // Add Balance
-        users[uIdx].balance = Number(users[uIdx].balance || 0) + Number(req.amount);
-
-        // Add to User History
-        if(!users[uIdx].history) users[uIdx].history = [];
-        users[uIdx].history.push({
-            type: 'deposit',
-            amount: req.amount,
-            method: req.method || 'Added via bKash Personal',
-            trx: req.trx,
-            time: new Date().toLocaleTimeString()
-        });
-
-        localStorage.setItem('app_users', JSON.stringify(users));
-
-        // Remove from pending
         deps.splice(index, 1);
         localStorage.setItem('app_pending_deposits', JSON.stringify(deps));
-
         alert('Deposit Approved Successfully!');
-        loadPendingDeposits();
+        refreshDashboard();
     }
 
     function rejectDeposit(index) {
         let deps = JSON.parse(localStorage.getItem('app_pending_deposits')) || [];
         deps.splice(index, 1);
         localStorage.setItem('app_pending_deposits', JSON.stringify(deps));
-        alert('Deposit Request Rejected!');
-        loadPendingDeposits();
+        alert('Deposit Rejected!');
+        refreshDashboard();
     }
 
-    function manualAddBalance() {
-        let email = document.getElementById('target-user-email').value.trim();
-        let amt = Number(document.getElementById('target-user-amt').value);
+    function renderUsersList(users) {
+        let container = document.getElementById('users-list-container');
+        container.innerHTML = '';
 
-        if(!email || !amt) return alert('Enter target email and amount!');
+        if(!users.length) {
+            container.innerHTML = '<div class="text-sub text-center py-2">No registered users found.</div>';
+            return;
+        }
 
-        let users = JSON.parse(localStorage.getItem('app_users')) || [];
-        let uIdx = users.findIndex(u => u.email === email);
-
-        if(uIdx === -1) return alert('User not found!');
-
-        users[uIdx].balance = Number(users[uIdx].balance || 0) + amt;
-        
-        if(!users[uIdx].history) users[uIdx].history = [];
-        users[uIdx].history.push({
-            type: 'deposit',
-            amount: amt,
-            method: 'Added via Admin',
-            time: new Date().toLocaleTimeString()
+        users.forEach(u => {
+            container.innerHTML += `
+                <div class="bg-dark p-2 px-3 rounded mb-2 d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold text-white">${u.email}</div>
+                    </div>
+                    <span class="badge bg-primary fs-6">৳ ${Number(u.balance || 0).toFixed(2)}</span>
+                </div>`;
         });
-
-        localStorage.setItem('app_users', JSON.stringify(users));
-        alert(`Successfully added ৳${amt} to ${email}`);
-
-        document.getElementById('target-user-email').value = '';
-        document.getElementById('target-user-amt').value = '';
     }
 
-    loadAdminData();
+    if(sessionStorage.getItem('admin_unlocked') === 'true') {
+        refreshDashboard();
+    }
 </script>
 </body>
 </html>
