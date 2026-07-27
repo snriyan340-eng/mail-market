@@ -1,400 +1,279 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mail Market Admin Panel</title>
+    <title>Admin Panel - Mail Market</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { background-color: #0b132b; color: #ffffff; font-family: 'Poppins', sans-serif; }
-        .card-box { background-color: #1c2541; border: 1px solid #3a506b; border-radius: 12px; }
-        .form-control, .form-select { background-color: #ffffff !important; color: #000000 !important; font-weight: 500; }
-        label { font-size: 13px; font-weight: 500; color: #cbd5e1; }
-        .dash-card { background: #10172a; border: 1px solid #3a506b; border-radius: 10px; padding: 15px; }
+        :root {
+            --bg-body: #0b132b;
+            --card-bg: #1c2541;
+            --text-main: #ffffff;
+            --text-sub: #cbd5e1;
+            --border-color: #3a506b;
+            --input-bg: #10172a;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            padding-bottom: 50px;
+        }
+
+        .card-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-control, .form-select {
+            background-color: var(--input-bg) !important;
+            color: #ffffff !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 10px;
+            padding: 10px 14px;
+        }
+
+        .form-control::placeholder { color: #94a3b8 !important; }
     </style>
 </head>
-<body class="p-3">
+<body>
 
-<div class="container" style="max-width: 650px;">
+<div class="top-navbar bg-dark py-3 px-4 border-bottom border-secondary d-flex justify-content-between align-items-center">
+    <h4 class="m-0 fw-bold text-danger"><i class="fa-solid fa-user-shield me-2"></i>Admin Dashboard</h4>
+    <a href="index.html" class="btn btn-outline-light btn-sm fw-bold">Go to App</a>
+</div>
 
-    <!-- Login -->
-    <div id="auth-box" class="card-box p-4 mx-auto my-5">
-        <h5 class="fw-bold text-center mb-3">Admin Access Required</h5>
-        <input type="password" id="admin-pass" class="form-control text-center mb-3" placeholder="Enter Admin Password">
-        <button onclick="checkAdmin()" class="btn btn-primary w-100 fw-bold">Login to Panel</button>
+<div class="container mt-4" style="max-width: 750px;">
+
+    <!-- Set MFS Numbers -->
+    <div class="card-box p-4 mb-4">
+        <h5 class="fw-bold mb-3 text-warning"><i class="fa-solid fa-phone me-2"></i>Set Send Money Numbers</h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="small text-sub mb-1">bKash Personal Number</label>
+                <input type="text" id="num-bkash" class="form-control" placeholder="017xxxxxxxx">
+            </div>
+            <div class="col-md-4">
+                <label class="small text-sub mb-1">Nagad Personal Number</label>
+                <input type="text" id="num-nagad" class="form-control" placeholder="018xxxxxxxx">
+            </div>
+            <div class="col-md-4">
+                <label class="small text-sub mb-1">Rocket Personal Number</label>
+                <input type="text" id="num-rocket" class="form-control" placeholder="019xxxxxxxx">
+            </div>
+        </div>
+        <button onclick="saveNumbers()" class="btn btn-warning fw-bold mt-3 px-4">Save Numbers</button>
     </div>
 
-    <!-- Admin Dashboard -->
-    <div id="admin-panel" class="d-none">
+    <!-- Add Products / Stock -->
+    <div class="card-box p-4 mb-4">
+        <h5 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-plus me-2"></i>Add / Manage Products</h5>
         
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="text-primary fw-bold m-0"><i class="fa-solid fa-gauge me-2"></i>Admin Dashboard</h4>
-            <button onclick="logoutAdmin()" class="btn btn-danger btn-sm fw-bold">Lock Panel</button>
-        </div>
-
-        <!-- 1. Live Stats -->
-        <div class="row g-2 mb-4">
-            <div class="col-4">
-                <div class="dash-card text-center">
-                    <small class="text-muted d-block">Total Users</small>
-                    <span class="fs-5 fw-bold text-info" id="stat-users">0</span>
-                </div>
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label class="small text-sub mb-1">Category Name</label>
+                <input type="text" id="prod-cat" class="form-control" placeholder="e.g. Hotmail / Gmail">
             </div>
-            <div class="col-4">
-                <div class="dash-card text-center">
-                    <small class="text-muted d-block">Pending Dep.</small>
-                    <span class="fs-5 fw-bold text-warning" id="stat-deps">0</span>
-                </div>
+            <div class="col-md-5">
+                <label class="small text-sub mb-1">Product Title</label>
+                <input type="text" id="prod-title" class="form-control" placeholder="e.g. Hotmail Fresh 2024">
             </div>
-            <div class="col-4">
-                <div class="dash-card text-center">
-                    <small class="text-muted d-block">Total Stock</small>
-                    <span class="fs-5 fw-bold text-success" id="stat-stock">0</span>
-                </div>
+            <div class="col-md-3">
+                <label class="small text-sub mb-1">Price Per Unit (৳)</label>
+                <input type="number" id="prod-price" class="form-control" placeholder="2.50">
             </div>
         </div>
 
-        <!-- 2. Payment Gateway Numbers Settings -->
-        <div class="card-box p-3 mb-4">
-            <h6 class="fw-bold mb-3 text-info"><i class="fa-solid fa-gear me-2"></i>Payment Numbers Settings</h6>
-            <div class="mb-2">
-                <label>bKash Personal Number</label>
-                <input type="text" id="pay-bkash" class="form-control" placeholder="017xxxxxxxx">
-            </div>
-            <div class="mb-2">
-                <label>Nagad Personal Number</label>
-                <input type="text" id="pay-nagad" class="form-control" placeholder="018xxxxxxxx">
-            </div>
-            <div class="mb-2">
-                <label>Rocket Personal Number</label>
-                <input type="text" id="pay-rocket" class="form-control" placeholder="019xxxxxxxx">
-            </div>
-            <button class="btn btn-info text-white w-100 fw-bold mt-2" onclick="savePaymentNumbers()">Save Numbers</button>
+        <div class="mb-3">
+            <label class="small text-sub mb-1">Product Mail Data (Line by Line)</label>
+            <textarea id="prod-mails" class="form-control" rows="4" placeholder="email1@domain.com|password&#10;email2@domain.com|password"></textarea>
         </div>
 
-        <!-- 3. Dynamic Category Input -->
-        <div class="card-box p-3 mb-4">
-            <h6 class="fw-bold mb-3 text-success"><i class="fa-solid fa-folder-plus me-2"></i>Publish Category & Sub-Item</h6>
-            <div class="mb-2">
-                <label>Main Category Name (Free Text Input)</label>
-                <input type="text" id="new-main-cat" class="form-control" placeholder="e.g. Hotmail, Gmail, Facebook">
-            </div>
-            <div class="mb-2">
-                <label>Sub Category / Item Title</label>
-                <input type="text" id="new-sub-item" class="form-control" placeholder="e.g. Outlook.fr Premium">
-            </div>
-            <div class="mb-2">
-                <label>Price (৳ BDT)</label>
-                <input type="number" id="new-price" class="form-control" placeholder="2.50">
-            </div>
-            <button class="btn btn-success w-100 fw-bold" onclick="publishItem()">Publish Item</button>
-        </div>
+        <button onclick="addProduct()" class="btn btn-primary fw-bold px-4">Publish / Update Stock</button>
+    </div>
 
-        <!-- 4. Add Mails Stock -->
-        <div class="card-box p-3 mb-4">
-            <h6 class="fw-bold mb-3 text-warning"><i class="fa-solid fa-cloud-arrow-up me-2"></i>Add Mails / Stock Data</h6>
-            <div class="mb-2">
-                <label>Select Main Category</label>
-                <select id="stock-main-cat" class="form-select" onchange="updateSubDropdown()"></select>
-            </div>
-            <div class="mb-2">
-                <label>Select Sub Item</label>
-                <select id="stock-sub-cat" class="form-select"></select>
-            </div>
-            <div class="mb-3">
-                <label>Paste Mails (Line by line format)</label>
-                <textarea id="stock-mails" class="form-control" rows="4" placeholder="user1@mail.com|pass123&#10;user2@mail.com|pass456"></textarea>
-            </div>
-            <button class="btn btn-warning w-100 fw-bold text-dark" onclick="uploadMails()">Upload Mails Stock</button>
-        </div>
+    <!-- Pending Deposit Requests -->
+    <div class="card-box p-4 mb-4">
+        <h5 class="fw-bold mb-3 text-success"><i class="fa-solid fa-clock me-2"></i>Pending Deposit Requests</h5>
+        <div id="pending-dep-list" class="small"></div>
+    </div>
 
-        <!-- 5. Pending Deposit Requests -->
-        <div class="card-box p-3 mb-4">
-            <h6 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-clock me-2"></i>Pending User Deposit Requests</h6>
-            <div id="deposit-requests-list" class="small"></div>
-        </div>
-
-        <!-- 6. User Management & Manual Balance -->
-        <div class="card-box p-3 mb-4">
-            <h6 class="fw-bold mb-3 text-info"><i class="fa-solid fa-users me-2"></i>User Management (Manual Balance Add)</h6>
-            <div class="mb-2">
-                <label>Select User Email</label>
-                <select id="user-select-list" class="form-select"></select>
+    <!-- Manual Balance Credit -->
+    <div class="card-box p-4 mb-4">
+        <h5 class="fw-bold mb-3 text-info"><i class="fa-solid fa-wallet me-2"></i>Manual User Balance Credit</h5>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="small text-sub mb-1">Target User Email</label>
+                <input type="email" id="target-user-email" class="form-control" placeholder="user@gmail.com">
             </div>
-            <div class="row g-2 mb-2">
-                <div class="col"><input type="number" id="bal-amount" class="form-control" placeholder="Amount (৳)"></div>
-                <div class="col">
-                    <select id="bal-action" class="form-select">
-                        <option value="add">Add Balance</option>
-                        <option value="cut">Deduct Balance</option>
-                    </select>
-                </div>
+            <div class="col-md-6">
+                <label class="small text-sub mb-1">Amount to Add (৳)</label>
+                <input type="number" id="target-user-amt" class="form-control" placeholder="100.00">
             </div>
-            <button class="btn btn-primary w-100 fw-bold" onclick="updateUserBalance()">Update Balance</button>
         </div>
-
-        <!-- 7. Live Stock Inventory -->
-        <div class="card-box p-3 mb-4">
-            <h6 class="fw-bold mb-3 text-light"><i class="fa-solid fa-boxes-stacked me-2"></i>Current Stock Inventory List</h6>
-            <div id="stock-inventory-view" class="small"></div>
-        </div>
-
+        <button onclick="manualAddBalance()" class="btn btn-info fw-bold mt-3 text-white px-4">Credit Balance</button>
     </div>
 
 </div>
 
 <script>
-    const ADMIN_SECRET = "HABIBI@RAJU";
-
-    function checkAdmin() {
-        if(document.getElementById('admin-pass').value === ADMIN_SECRET) {
-            localStorage.setItem('admin_logged', 'true');
-            showPanel();
-        } else {
-            alert('Wrong Admin Password!');
-        }
-    }
-
-    function showPanel() {
-        document.getElementById('auth-box').classList.add('d-none');
-        document.getElementById('admin-panel').classList.remove('d-none');
-        loadAllData();
-    }
-
-    function logoutAdmin() {
-        localStorage.removeItem('admin_logged');
-        location.reload();
-    }
-
-    function loadAllData() {
-        loadStats();
-        loadPaymentNumbers();
-        loadDropdowns();
-        loadDepositRequests();
-        loadUserList();
-        loadStockInventory();
-    }
-
-    function loadStats() {
-        let users = JSON.parse(localStorage.getItem('app_users')) || [];
-        let deps = JSON.parse(localStorage.getItem('app_pending_deposits')) || [];
-        let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
-
-        let totalStock = 0;
-        Object.keys(store).forEach(cat => {
-            store[cat].forEach(item => {
-                if(item.mails) totalStock += item.mails.length;
-            });
-        });
-
-        document.getElementById('stat-users').innerText = users.length;
-        document.getElementById('stat-deps').innerText = deps.length;
-        document.getElementById('stat-stock').innerText = totalStock;
-    }
-
-    function loadPaymentNumbers() {
+    function loadAdminData() {
+        // Load Pay Numbers
         let nums = JSON.parse(localStorage.getItem('app_pay_numbers')) || { bkash: '01700000000', nagad: '01800000000', rocket: '01900000000' };
-        document.getElementById('pay-bkash').value = nums.bkash;
-        document.getElementById('pay-nagad').value = nums.nagad;
-        document.getElementById('pay-rocket').value = nums.rocket;
+        document.getElementById('num-bkash').value = nums.bkash || '';
+        document.getElementById('num-nagad').value = nums.nagad || '';
+        document.getElementById('num-rocket').value = nums.rocket || '';
+
+        // Load Pending Deposits
+        loadPendingDeposits();
     }
 
-    function savePaymentNumbers() {
+    function saveNumbers() {
         let nums = {
-            bkash: document.getElementById('pay-bkash').value,
-            nagad: document.getElementById('pay-nagad').value,
-            rocket: document.getElementById('pay-rocket').value
+            bkash: document.getElementById('num-bkash').value.trim(),
+            nagad: document.getElementById('num-nagad').value.trim(),
+            rocket: document.getElementById('num-rocket').value.trim()
         };
         localStorage.setItem('app_pay_numbers', JSON.stringify(nums));
-        alert('পেমেন্ট নাম্বার সেভ হয়েছে!');
+        alert('MFS Numbers updated successfully!');
     }
 
-    function publishItem() {
-        let mainCat = document.getElementById('new-main-cat').value.trim();
-        let subItem = document.getElementById('new-sub-item').value.trim();
-        let price = document.getElementById('new-price').value.trim();
+    function addProduct() {
+        let cat = document.getElementById('prod-cat').value.trim();
+        let title = document.getElementById('prod-title').value.trim();
+        let price = Number(document.getElementById('prod-price').value);
+        let rawMails = document.getElementById('prod-mails').value.trim();
 
-        if(!mainCat || !subItem || !price) return alert('সব তথ্য পূরণ করুন!');
+        if(!cat || !title || !price || !rawMails) return alert('Please fill in all product fields!');
+
+        let mailList = rawMails.split('\n').map(m => m.trim()).filter(m => m.length > 0);
 
         let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
-        if(!store[mainCat]) store[mainCat] = [];
+        if(!store[cat]) store[cat] = [];
 
-        let existing = store[mainCat].find(i => i.title === subItem);
-        if(!existing) {
-            store[mainCat].push({ title: subItem, price: price, mails: [] });
-        } else {
+        let existing = store[cat].find(i => i.title === title);
+        if(existing) {
             existing.price = price;
+            existing.mails.push(...mailList);
+        } else {
+            store[cat].push({ title: title, price: price, mails: mailList });
         }
 
         localStorage.setItem('app_store_data', JSON.stringify(store));
-        alert('ক্যাটাগরি ও আইটেম সফলভাবে পাবলিশ হয়েছে!');
-        document.getElementById('new-main-cat').value = '';
-        document.getElementById('new-sub-item').value = '';
-        document.getElementById('new-price').value = '';
-        loadAllData();
+        alert('Stock updated successfully!');
+        
+        document.getElementById('prod-cat').value = '';
+        document.getElementById('prod-title').value = '';
+        document.getElementById('prod-price').value = '';
+        document.getElementById('prod-mails').value = '';
     }
 
-    function loadDropdowns() {
-        let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
-        let mainSelect = document.getElementById('stock-main-cat');
-        mainSelect.innerHTML = '';
-
-        Object.keys(store).forEach(cat => {
-            mainSelect.innerHTML += `<option value="${cat}">${cat}</option>`;
-        });
-
-        updateSubDropdown();
-    }
-
-    function updateSubDropdown() {
-        let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
-        let selectedMain = document.getElementById('stock-main-cat').value;
-        let subSelect = document.getElementById('stock-sub-cat');
-        subSelect.innerHTML = '';
-
-        if(store[selectedMain]) {
-            store[selectedMain].forEach(item => {
-                subSelect.innerHTML += `<option value="${item.title}">${item.title}</option>`;
-            });
-        }
-    }
-
-    function uploadMails() {
-        let mainCat = document.getElementById('stock-main-cat').value;
-        let subTitle = document.getElementById('stock-sub-cat').value;
-        let rawMails = document.getElementById('stock-mails').value.trim();
-
-        if(!rawMails) return alert('মেইল ইনপুট দিন!');
-
-        let mailList = rawMails.split('\n').filter(m => m.trim() !== '');
-        let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
-
-        let item = store[mainCat].find(i => i.title === subTitle);
-        if(item) {
-            if(!item.mails) item.mails = [];
-            item.mails = item.mails.concat(mailList);
-            localStorage.setItem('app_store_data', JSON.stringify(store));
-            alert(`${mailList.length} টি মেইল স্টকে যুক্ত হয়েছে!`);
-            document.getElementById('stock-mails').value = '';
-            loadAllData();
-        }
-    }
-
-    function loadDepositRequests() {
+    function loadPendingDeposits() {
         let deps = JSON.parse(localStorage.getItem('app_pending_deposits')) || [];
-        let container = document.getElementById('deposit-requests-list');
+        let container = document.getElementById('pending-dep-list');
         container.innerHTML = '';
 
         if(!deps.length) {
-            container.innerHTML = '<div class="text-center text-muted py-2">কোনো পেন্ডিং ডিপোজিট নেই।</div>';
+            container.innerHTML = '<div class="text-sub py-2">No pending deposit requests.</div>';
             return;
         }
 
         deps.forEach((d, idx) => {
             container.innerHTML += `
-                <div class="d-flex justify-content-between align-items-center bg-dark p-2 rounded mb-2">
+                <div class="bg-dark p-3 rounded mb-2 d-flex justify-content-between align-items-center border-start border-4 border-warning">
                     <div>
                         <div class="fw-bold text-white">${d.user}</div>
-                        <div class="text-success">৳${d.amount} (${d.method}) - TrxID: ${d.trx}</div>
+                        <div class="text-sub">TrxID: <span class="text-warning">${d.trx}</span> | Amount: <strong class="text-success">৳${d.amount}</strong></div>
+                        <div class="small text-info">${d.method || 'Added via bKash Personal'} (${d.time})</div>
                     </div>
-                    <div>
-                        <button class="btn btn-success btn-sm me-1" onclick="approveDeposit(${idx})">Approve</button>
-                        <button class="btn btn-danger btn-sm" onclick="rejectDeposit(${idx})">Reject</button>
+                    <div class="d-flex gap-2">
+                        <button onclick="approveDeposit(${idx})" class="btn btn-sm btn-success fw-bold">Approve</button>
+                        <button onclick="rejectDeposit(${idx})" class="btn btn-sm btn-danger fw-bold">Reject</button>
                     </div>
                 </div>`;
         });
     }
 
-    function approveDeposit(idx) {
+    function approveDeposit(index) {
         let deps = JSON.parse(localStorage.getItem('app_pending_deposits')) || [];
-        let users = JSON.parse(localStorage.getItem('app_users')) || [];
-        let req = deps[idx];
+        let req = deps[index];
+        if(!req) return;
 
-        let userObj = users.find(u => u.email === req.user);
-        if(userObj) {
-            userObj.balance = Number(userObj.balance) + Number(req.amount);
-            if(!userObj.history) userObj.history = [];
-            userObj.history.push({
-                amount: req.amount,
-                source: `${req.method} (TrxID: ${req.trx})`,
-                type: 'deposit'
-            });
-            localStorage.setItem('app_users', JSON.stringify(users));
+        let users = JSON.parse(localStorage.getItem('app_users')) || [];
+        let uIdx = users.findIndex(u => u.email === req.user);
+
+        if(uIdx === -1) {
+            alert('User account not found!');
+            return;
         }
 
-        deps.splice(idx, 1);
+        // Add Balance
+        users[uIdx].balance = Number(users[uIdx].balance || 0) + Number(req.amount);
+
+        // Add to User History
+        if(!users[uIdx].history) users[uIdx].history = [];
+        users[uIdx].history.push({
+            type: 'deposit',
+            amount: req.amount,
+            method: req.method || 'Added via bKash Personal',
+            trx: req.trx,
+            time: new Date().toLocaleTimeString()
+        });
+
+        localStorage.setItem('app_users', JSON.stringify(users));
+
+        // Remove from pending
+        deps.splice(index, 1);
         localStorage.setItem('app_pending_deposits', JSON.stringify(deps));
-        alert('ডিপোজিট অ্যাপ্রুভড এবং ব্যালেন্স যুক্ত করা হয়েছে!');
-        loadAllData();
+
+        alert('Deposit Approved Successfully!');
+        loadPendingDeposits();
     }
 
-    function rejectDeposit(idx) {
+    function rejectDeposit(index) {
         let deps = JSON.parse(localStorage.getItem('app_pending_deposits')) || [];
-        deps.splice(idx, 1);
+        deps.splice(index, 1);
         localStorage.setItem('app_pending_deposits', JSON.stringify(deps));
-        alert('ডিপোজিট রিজেক্ট করা হয়েছে!');
-        loadAllData();
+        alert('Deposit Request Rejected!');
+        loadPendingDeposits();
     }
 
-    function loadUserList() {
-        let users = JSON.parse(localStorage.getItem('app_users')) || [];
-        let select = document.getElementById('user-select-list');
-        select.innerHTML = '';
-        users.forEach(u => {
-            select.innerHTML += `<option value="${u.email}">${u.email} (Balance: ৳${Number(u.balance).toFixed(2)})</option>`;
-        });
-    }
+    function manualAddBalance() {
+        let email = document.getElementById('target-user-email').value.trim();
+        let amt = Number(document.getElementById('target-user-amt').value);
 
-    function updateUserBalance() {
-        let email = document.getElementById('user-select-list').value;
-        let amt = document.getElementById('bal-amount').value;
-        let action = document.getElementById('bal-action').value;
-
-        if(!amt) return alert('অ্যামাউন্ট ইনপুট দিন!');
+        if(!email || !amt) return alert('Enter target email and amount!');
 
         let users = JSON.parse(localStorage.getItem('app_users')) || [];
-        let user = users.find(u => u.email === email);
+        let uIdx = users.findIndex(u => u.email === email);
 
-        if(user) {
-            if(action === 'add') {
-                user.balance = Number(user.balance) + Number(amt);
-                if(!user.history) user.history = [];
-                user.history.push({
-                    amount: amt,
-                    source: 'Added via Admin',
-                    type: 'deposit'
-                });
-            } else {
-                user.balance = Math.max(0, Number(user.balance) - Number(amt));
-            }
+        if(uIdx === -1) return alert('User not found!');
 
-            localStorage.setItem('app_users', JSON.stringify(users));
-            alert('ইউজার ব্যালেন্স আপডেট হয়েছে!');
-            document.getElementById('bal-amount').value = '';
-            loadAllData();
-        }
-    }
-
-    function loadStockInventory() {
-        let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
-        let view = document.getElementById('stock-inventory-view');
-        view.innerHTML = '';
-
-        Object.keys(store).forEach(cat => {
-            store[cat].forEach(item => {
-                let count = item.mails ? item.mails.length : 0;
-                view.innerHTML += `
-                    <div class="d-flex justify-content-between border-bottom border-secondary py-1">
-                        <span><strong>[${cat}]</strong> ${item.title}</span>
-                        <span class="badge ${count > 0 ? 'bg-success' : 'bg-danger'}">${count} Available</span>
-                    </div>`;
-            });
+        users[uIdx].balance = Number(users[uIdx].balance || 0) + amt;
+        
+        if(!users[uIdx].history) users[uIdx].history = [];
+        users[uIdx].history.push({
+            type: 'deposit',
+            amount: amt,
+            method: 'Added via Admin',
+            time: new Date().toLocaleTimeString()
         });
+
+        localStorage.setItem('app_users', JSON.stringify(users));
+        alert(`Successfully added ৳${amt} to ${email}`);
+
+        document.getElementById('target-user-email').value = '';
+        document.getElementById('target-user-amt').value = '';
     }
 
-    if(localStorage.getItem('admin_logged') === 'true') showPanel();
+    loadAdminData();
 </script>
 </body>
 </html>
