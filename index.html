@@ -1,81 +1,310 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mail Market - Digital Store</title>
+    <!-- Google Font: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        :root { --bg-color: #0f172a; --card-bg: #1e293b; --accent-color: #6366f1; --text-color: #f8fafc; }
-        body { background-color: var(--bg-color); color: var(--text-color); font-family: sans-serif; padding-bottom: 80px; }
-        .top-navbar { background: #1e1b4b; border-bottom: 1px solid #312e81; padding: 15px 20px; }
-        .product-card { background: var(--card-bg); border: 1px solid #334155; border-radius: 16px; margin-bottom: 15px; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #1e1b4b; border-top: 1px solid #312e81; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
-        .bottom-nav a { color: #94a3b8; text-decoration: none; text-align: center; font-size: 11px; }
-        .bottom-nav a.active { color: #818cf8; }
-        .balance-badge { background: #312e81; color: #a5b4fc; border: 1px solid #6366f1; border-radius: 20px; padding: 6px 14px; font-weight: 600; }
-        .btn-custom { background: var(--accent-color); color: white; border-radius: 10px; font-weight: 600; }
-        .form-control, .form-select { background-color: #0f172a; border: 1px solid #334155; color: white; border-radius: 10px; }
+        :root {
+            --bg-body: #0b132b;
+            --card-bg: #1c2541;
+            --text-main: #ffffff;
+            --text-sub: #94a3b8;
+            --border-color: #3a506b;
+            --input-bg: #10172a;
+            --accent-color: #3b82f6;
+        }
+
+        [data-theme="light"] {
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --border-color: #e2e8f0;
+            --input-bg: #f1f5f9;
+            --accent-color: #2563eb;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            padding-bottom: 90px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .top-navbar {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+        }
+
+        .theme-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .card-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control, .form-select {
+            background-color: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 10px;
+            padding: 10px 14px;
+        }
+
+        .form-control::placeholder { color: var(--text-sub) !important; }
+
+        .cat-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 5px 0 10px 0;
+        }
+
+        /* Neon Glow Button Styling */
+        .cat-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cat-btn.active {
+            background: #3b82f6;
+            color: #ffffff;
+            border-color: #60a5fa;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.8), 0 0 20px rgba(59, 130, 246, 0.4);
+            transform: scale(1.03);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .bottom-nav a {
+            color: var(--text-sub);
+            text-decoration: none;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .bottom-nav a.active { color: var(--accent-color); font-weight: 600; }
+
+        .live-card {
+            background: var(--input-bg);
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            border-left: 4px solid #10b981;
+        }
     </style>
 </head>
 <body>
 
-<div class="top-navbar d-flex justify-content-between align-items-center shadow-sm">
-    <h5 class="m-0 fw-bold text-white"><i class="fa-solid fa-cart-flatbed-suitcases me-2 text-primary"></i>Mail Market</h5>
-    <div><span class="balance-badge">৳ <span id="balance-val">0.00</span></span></div>
+<!-- Header Top Bar -->
+<div class="top-navbar d-flex justify-content-between align-items-center">
+    <h5 class="m-0 fw-bold text-primary"><i class="fa-solid fa-store me-2"></i>Mail Market</h5>
+    <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-primary px-3 py-2 rounded-pill fs-6">৳ <span id="user-bal">0.00</span></span>
+        <button onclick="toggleTheme()" class="theme-btn" id="theme-icon"><i class="fa-solid fa-moon"></i></button>
+    </div>
 </div>
 
-<div class="container mt-3">
-    <!-- Auth View -->
-    <div id="auth-view" class="card product-card p-4 mx-auto my-5" style="max-width: 400px;">
-        <h4 class="text-center text-white fw-bold mb-3" id="auth-title">Welcome to Mail Market</h4>
-        <div class="mb-3">
-            <label class="form-label text-muted small">Email Address</label>
-            <input type="email" id="user-email" class="form-control" placeholder="Enter email">
+<div class="container mt-4" style="max-width: 550px;">
+
+    <!-- Auth Box (Login & Register Form) -->
+    <div id="auth-box" class="card-box p-4 mx-auto my-3">
+        <h4 class="fw-bold mb-3 text-center" id="auth-title">Account Login</h4>
+        
+        <div class="mb-3" id="name-field" style="display: none;">
+            <label class="small text-sub mb-1">Full Name</label>
+            <input type="text" id="reg-name" class="form-control" placeholder="Enter full name">
         </div>
+
         <div class="mb-3">
-            <label class="form-label text-muted small">Password</label>
-            <input type="password" id="user-password" class="form-control" placeholder="Enter password">
+            <label class="small text-sub mb-1">Email / Username</label>
+            <input type="text" id="reg-email" class="form-control" placeholder="Enter email address">
         </div>
-        <button onclick="handleAuth()" class="btn btn-custom w-100 py-2 mb-2" id="auth-btn">Login / Register</button>
+
+        <div class="mb-3">
+            <label class="small text-sub mb-1">Password</label>
+            <input type="password" id="reg-pass" class="form-control" placeholder="Enter password">
+        </div>
+
+        <button onclick="handleAuth()" class="btn btn-primary w-100 fw-bold py-2 mb-3" id="auth-btn">Login</button>
+
+        <p class="text-center small mb-0">
+            <a href="javascript:void(0)" onclick="switchAuthMode()" id="auth-toggle-link" class="text-primary text-decoration-none fw-semibold">Don't have an account? Register here</a>
+        </p>
     </div>
 
-    <!-- Dashboard View -->
+    <!-- Main Dashboard View -->
     <div id="dashboard-view" class="d-none">
-        <div class="alert alert-info text-center" style="background: #1e293b; border-color: #334155; color: #818cf8;">
-            Account logged in successfully! Market items will appear here once added from Admin panel.
+        
+        <!-- Category Scroll Tabs with Neon Glow -->
+        <div class="cat-scroll mb-3">
+            <button class="cat-btn active" onclick="selectCategory(this)">Hotmail</button>
+            <button class="cat-btn" onclick="selectCategory(this)">Gmail</button>
+            <button class="cat-btn" onclick="selectCategory(this)">Facebook</button>
+            <button class="cat-btn" onclick="selectCategory(this)">Edu Gmail</button>
         </div>
+
+        <!-- Product Card -->
+        <div class="card-box p-3 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold m-0">Outlook.fr Premium</h6>
+                <span class="badge bg-success">72% OFF</span>
+            </div>
+            <h4 class="fw-bold text-primary mb-2">৳0.77 <span class="fs-6 text-sub text-decoration-line-through">৳2.75</span></h4>
+            <ul class="small text-sub ps-3 mb-3">
+                <li>Long-term email accounts</li>
+                <li>High success rate & Instant Delivery</li>
+            </ul>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="small fw-semibold text-success"><i class="fa-solid fa-box me-1"></i>Stock: <span id="stock-count">2500</span></span>
+                <button class="btn btn-primary fw-bold px-4">Buy Now</button>
+            </div>
+        </div>
+
+        <!-- Live Activities Section -->
+        <div class="card-box p-3 mb-3">
+            <h6 class="fw-bold mb-3 text-success"><i class="fa-solid fa-wallet me-2"></i>Live Deposits</h6>
+            <div id="deposit-list"></div>
+        </div>
+
+        <div class="card-box p-3 mb-3">
+            <h6 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-cart-shopping me-2"></i>Live Purchases</h6>
+            <div id="purchase-list"></div>
+        </div>
+
     </div>
+
 </div>
 
-<div class="bottom-nav">
-    <a href="#" class="active"><i class="fa-solid fa-house-chimney d-block fs-6 mb-1"></i>Home</a>
-    <a href="#" onclick="alert('Account required')"><i class="fa-solid fa-wallet d-block fs-6 mb-1"></i>Deposit</a>
-    <a href="#" onclick="location.reload()"><i class="fa-solid fa-power-off d-block fs-6 mb-1"></i>Logout</a>
+<!-- Bottom Nav -->
+<div class="bottom-nav d-none" id="nav-bar">
+    <a href="javascript:void(0)" class="active"><i class="fa-solid fa-house d-block fs-6 mb-1"></i>Home</a>
+    <a href="javascript:void(0)"><i class="fa-solid fa-wallet d-block fs-6 mb-1"></i>Deposit</a>
+    <a href="javascript:void(0)"><i class="fa-solid fa-clock-history d-block fs-6 mb-1"></i>History</a>
+    <a href="javascript:void(0)" onclick="logout()"><i class="fa-solid fa-power-off d-block fs-6 mb-1"></i>Logout</a>
 </div>
 
 <script>
-    function handleAuth() {
-        const email = document.getElementById('user-email').value.trim();
-        const password = document.getElementById('user-password').value.trim();
+    let isLogin = true;
 
-        if(!email || !password) {
-            alert('Please fill in both email and password');
-            return;
+    // Dark / Light Theme Toggle
+    function toggleTheme() {
+        const body = document.body;
+        const icon = document.getElementById('theme-icon');
+        if (body.getAttribute('data-theme') === 'light') {
+            body.removeAttribute('data-theme');
+            icon.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        } else {
+            body.setAttribute('data-theme', 'light');
+            icon.innerHTML = '<i class="fa-solid fa-sun text-warning"></i>';
         }
-
-        // Save session locally to bypass DB errors
-        localStorage.setItem('user_email', email);
-        document.getElementById('auth-view').classList.add('d-none');
-        document.getElementById('dashboard-view').classList.remove('d-none');
     }
 
-    // Auto Login check
-    if(localStorage.getItem('user_email')) {
-        document.getElementById('auth-view').classList.add('d-none');
-        document.getElementById('dashboard-view').classList.remove('d-none');
+    // Category Neon Light Switch
+    function selectCategory(element) {
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        element.classList.add('active');
     }
+
+    // Switch between Login and Register
+    function switchAuthMode() {
+        isLogin = !isLogin;
+        document.getElementById('auth-title').innerText = isLogin ? "Account Login" : "Create Account";
+        document.getElementById('name-field').style.display = isLogin ? "none" : "block";
+        document.getElementById('auth-btn').innerText = isLogin ? "Login" : "Register";
+        document.getElementById('auth-toggle-link').innerText = isLogin ? "Don't have an account? Register here" : "Already have an account? Login here";
+    }
+
+    function handleAuth() {
+        const email = document.getElementById('reg-email').value.trim();
+        const pass = document.getElementById('reg-pass').value.trim();
+        if(!email || !pass) return alert('Please fill in required fields!');
+
+        localStorage.setItem('user_logged', 'true');
+        showDashboard();
+    }
+
+    function showDashboard() {
+        document.getElementById('auth-box').classList.add('d-none');
+        document.getElementById('dashboard-view').classList.remove('d-none');
+        document.getElementById('nav-bar').classList.remove('d-none');
+    }
+
+    function logout() {
+        localStorage.removeItem('user_logged');
+        location.reload();
+    }
+
+    // Live Activity Simulation Logic (10s - 30s intervals)
+    const mockEmails = ['md********@g****.com', 'ra********@g****.com', 'ha********@f****.com', 'sh********@g****.com', 'al********@g****.com'];
+    
+    function generateLiveActivities() {
+        const depList = document.getElementById('deposit-list');
+        const purList = document.getElementById('purchase-list');
+        
+        const randEmail = mockEmails[Math.floor(Math.random() * mockEmails.length)];
+        const randAmt = Math.floor(Math.random() * 400) + 100;
+
+        depList.innerHTML = `<div class="live-card d-flex justify-content-between align-items-center">
+            <div><div class="fw-bold small">${randEmail}</div><div class="text-sub fs-6">৳${randAmt}.00</div></div>
+            <span class="badge bg-success">bKash Personal</span>
+        </div>`;
+
+        purList.innerHTML = `<div class="live-card d-flex justify-content-between align-items-center" style="border-left-color: #3b82f6;">
+            <div><div class="fw-bold small">${randEmail}</div><div class="text-sub fs-6">Purchased 1x Outlook.fr</div></div>
+            <span class="badge bg-primary">৳0.77</span>
+        </div>`;
+
+        const randomNext = Math.floor(Math.random() * 20000) + 10000;
+        setTimeout(generateLiveActivities, randomNext);
+    }
+
+    if(localStorage.getItem('user_logged') === 'true') showDashboard();
+    generateLiveActivities();
 </script>
 </body>
 </html>
