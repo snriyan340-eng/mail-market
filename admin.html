@@ -151,6 +151,34 @@
         </div>
     </div>
 
+    <!-- User Balance Control Panel (NEW) -->
+    <div class="card-box p-4 mb-4 border-info">
+        <h6 class="fw-bold mb-3 text-info"><i class="fa-solid fa-wallet me-2"></i>User Balance Control (Add / Remove)</h6>
+        
+        <div class="mb-3">
+            <label class="small text-sub mb-1">Target User Email</label>
+            <input type="email" id="bal-user-email" class="form-control" placeholder="user@gmail.com">
+        </div>
+
+        <div class="mb-3">
+            <label class="small text-sub mb-1">Amount (৳)</label>
+            <input type="number" id="bal-user-amount" class="form-control" placeholder="100.00">
+        </div>
+
+        <div class="row g-2">
+            <div class="col-6">
+                <button onclick="modifyUserBalance('add')" class="btn btn-success w-100 fw-bold py-2">
+                    <i class="fa-solid fa-plus me-1"></i> Add Balance
+                </button>
+            </div>
+            <div class="col-6">
+                <button onclick="modifyUserBalance('remove')" class="btn btn-danger w-100 fw-bold py-2">
+                    <i class="fa-solid fa-minus me-1"></i> Deduct Balance
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Add Mails / Stock Data -->
     <div class="card-box p-4 mb-4">
         <h6 class="fw-bold mb-3 text-warning"><i class="fa-solid fa-cloud-arrow-up me-2"></i>Add Mails / Stock Data</h6>
@@ -268,7 +296,6 @@
         location.reload();
     }
 
-    // Auto check login session on load
     if(sessionStorage.getItem('admin_unlocked') === 'true') {
         document.getElementById('admin-lock-screen').style.display = 'none';
     }
@@ -323,6 +350,60 @@
 
         // 4. Render Registered Users
         renderUsersList(users);
+    }
+
+    // Function to Add or Remove User Balance
+    function modifyUserBalance(action) {
+        let email = document.getElementById('bal-user-email').value.trim();
+        let amount = Number(document.getElementById('bal-user-amount').value);
+
+        if(!email || !amount || amount <= 0) {
+            return alert('Please enter a valid user email and positive amount!');
+        }
+
+        let users = JSON.parse(localStorage.getItem('app_users')) || [];
+        let uIdx = users.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+
+        if(uIdx === -1) {
+            return alert('User email not found in records!');
+        }
+
+        let currentBal = Number(users[uIdx].balance || 0);
+
+        if(action === 'add') {
+            users[uIdx].balance = currentBal + amount;
+            if(!users[uIdx].history) users[uIdx].history = [];
+            users[uIdx].history.push({
+                type: 'deposit',
+                amount: amount,
+                method: 'Added by Admin',
+                time: new Date().toLocaleTimeString()
+            });
+            alert(`Successfully Added ৳${amount} to ${email}`);
+        } else if(action === 'remove') {
+            if(amount > currentBal) {
+                return alert(`User only has ৳${currentBal}. Cannot deduct more than available balance!`);
+            }
+            users[uIdx].balance = currentBal - amount;
+            if(!users[uIdx].history) users[uIdx].history = [];
+            users[uIdx].history.push({
+                type: 'deduction',
+                amount: amount,
+                method: 'Deducted by Admin',
+                time: new Date().toLocaleTimeString()
+            });
+            alert(`Successfully Deducted ৳${amount} from ${email}`);
+        }
+
+        localStorage.setItem('app_users', JSON.stringify(users));
+        document.getElementById('bal-user-email').value = '';
+        document.getElementById('bal-user-amount').value = '';
+        refreshDashboard();
+    }
+
+    function quickSelectUser(email) {
+        document.getElementById('bal-user-email').value = email;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function syncCategoryInput(selectObj) {
@@ -470,7 +551,10 @@
                     <div>
                         <div class="fw-bold text-white">${u.email}</div>
                     </div>
-                    <span class="badge bg-primary fs-6">৳ ${Number(u.balance || 0).toFixed(2)}</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-primary fs-6">৳ ${Number(u.balance || 0).toFixed(2)}</span>
+                        <button onclick="quickSelectUser('${u.email}')" class="btn btn-sm btn-outline-info"><i class="fa-solid fa-pen-to-square"></i></button>
+                    </div>
                 </div>`;
         });
     }
