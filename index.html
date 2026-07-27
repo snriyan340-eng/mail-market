@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="bn">
+l<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -99,12 +99,12 @@
 
         .bottom-nav a.active { color: var(--accent-color); font-weight: 600; }
 
-        /* Method Cards */
+        /* MFS Payment Option Styles */
         .mfs-card {
             border: 2px solid var(--border-color);
             background: var(--input-bg);
             border-radius: 12px;
-            padding: 12px;
+            padding: 12px 5px;
             cursor: pointer;
             text-align: center;
             transition: all 0.2s ease;
@@ -115,11 +115,20 @@
             background: rgba(59, 130, 246, 0.15);
         }
 
-        .mfs-logo {
+        .mfs-logo-icon {
             height: 35px;
-            object-fit: contain;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16px;
+            border-radius: 6px;
             margin-bottom: 5px;
         }
+
+        .bkash-bg { background: #e2136e; color: #fff; }
+        .nagad-bg { background: #f7921e; color: #fff; }
+        .rocket-bg { background: #8c3494; color: #fff; }
 
         .live-card {
             background: var(--input-bg);
@@ -128,6 +137,12 @@
             margin-bottom: 8px;
             border-left: 4px solid #10b981;
             font-size: 13px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -146,15 +161,10 @@
     <!-- Auth Form -->
     <div id="auth-box" class="card-box p-4 mx-auto my-3">
         <h4 class="fw-bold mb-3 text-center" id="auth-title">Account Login</h4>
-        
-        <div class="mb-3" id="name-field" style="display: none;">
-            <label class="small text-sub mb-1">Full Name</label>
-            <input type="text" id="reg-name" class="form-control" placeholder="Enter full name">
-        </div>
 
         <div class="mb-3">
-            <label class="small text-sub mb-1">Email Address</label>
-            <input type="email" id="reg-email" class="form-control" placeholder="Enter email address">
+            <label class="small text-sub mb-1">Gmail / Email Address</label>
+            <input type="email" id="reg-email" class="form-control" placeholder="example@gmail.com">
         </div>
 
         <div class="mb-3">
@@ -192,7 +202,6 @@
     <div id="deposit-view" class="d-none page-section">
         <div class="card-box p-4">
             
-            <!-- Minimum Deposit Notice Box -->
             <div class="alert alert-primary py-2 px-3 mb-3 d-flex align-items-center justify-content-between" style="background: rgba(59, 130, 246, 0.15); border-color: #3b82f6; color: #60a5fa;">
                 <span class="fw-bold small"><i class="fa-solid fa-circle-info me-2"></i>MINIMUM DEPOSIT</span>
                 <span class="badge bg-primary fs-6">৳ 25</span>
@@ -210,27 +219,26 @@
             <div class="row g-2 mb-3">
                 <div class="col-4">
                     <div class="mfs-card selected" id="mfs-bkash" onclick="selectMFS('bKash')">
-                        <img src="https://raw.githubusercontent.com/Shakil-Official/Images/main/bkash.png" onerror="this.src='https://placehold.co/80x35?text=bKash'" class="mfs-logo d-block mx-auto">
-                        <span class="small fw-semibold d-block">bKash</span>
+                        <div class="mfs-logo-icon bkash-bg">bKash</div>
+                        <span class="small fw-semibold d-block">bKash Personal</span>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="mfs-card" id="mfs-nagad" onclick="selectMFS('Nagad')">
-                        <img src="https://raw.githubusercontent.com/Shakil-Official/Images/main/nagad.png" onerror="this.src='https://placehold.co/80x35?text=Nagad'" class="mfs-logo d-block mx-auto">
+                        <div class="mfs-logo-icon nagad-bg">Nagad</div>
                         <span class="small fw-semibold d-block">Nagad</span>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="mfs-card" id="mfs-rocket" onclick="selectMFS('Rocket')">
-                        <img src="https://raw.githubusercontent.com/Shakil-Official/Images/main/rocket.png" onerror="this.src='https://placehold.co/80x35?text=Rocket'" class="mfs-logo d-block mx-auto">
+                        <div class="mfs-logo-icon rocket-bg">Rocket</div>
                         <span class="small fw-semibold d-block">Rocket</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Dynamic Send Money Number Box -->
             <div class="alert alert-warning p-3 mb-3" style="background: rgba(245, 158, 11, 0.15); border-color: #f59e0b; color: #fbbf24;">
-                <div class="small fw-bold mb-1">Send Money (Personal Number):</div>
+                <div class="small fw-bold mb-1">Send Money Personal Number:</div>
                 <h5 class="fw-bold m-0 text-white" id="selected-mfs-number">01700000000</h5>
             </div>
 
@@ -266,16 +274,28 @@
     let currentUser = null;
     let selectedMethod = 'bKash';
 
-    // Initial Demo Store Setup if empty
+    // Mask Gmail helper function (e.g. snriyan340@gmail.com -> sn*******40@gmail.com)
+    function maskEmail(email) {
+        if (!email || !email.includes('@')) return 'user@gmail.com';
+        let parts = email.split('@');
+        let name = parts[0];
+        let domain = parts[1];
+
+        if (name.length <= 4) {
+            return name.substring(0, 1) + '***' + '@' + domain;
+        }
+        return name.substring(0, 2) + '*******' + name.substring(name.length - 2) + '@' + domain;
+    }
+
     function initDefaultStore() {
         if(!localStorage.getItem('app_store_data')) {
             let initialStore = {
                 "Hotmail": [
-                    { title: "Hotmail.com Fresh", price: 2.50, mails: ["usr1@hotmail.com|pass1", "usr2@hotmail.com|pass2"] },
-                    { title: "Hotmail Premium 2024", price: 5.00, mails: ["usr3@hotmail.com|pass3"] }
+                    { title: "Hotmail.com Fresh", price: 2.50, mails: ["usr1@hotmail.com|pass1", "usr2@hotmail.com|pass2", "usr3@hotmail.com|pass3"] },
+                    { title: "Hotmail Premium 2024", price: 5.00, mails: ["usr4@hotmail.com|pass4", "usr5@hotmail.com|pass5"] }
                 ],
                 "Gmail": [
-                    { title: "Gmail Aged (Old)", price: 12.00, mails: ["guser1@gmail.com|p123"] }
+                    { title: "Gmail Aged (Old)", price: 12.00, mails: ["guser1@gmail.com|p123", "guser2@gmail.com|p456"] }
                 ]
             };
             localStorage.setItem('app_store_data', JSON.stringify(initialStore));
@@ -290,7 +310,6 @@
             document.getElementById('dashboard-view').classList.remove('d-none');
             document.getElementById('nav-home').classList.add('active');
             loadProducts();
-            renderLiveActivities();
         } else if(page === 'deposit') {
             document.getElementById('deposit-view').classList.remove('d-none');
             document.getElementById('nav-deposit').classList.add('active');
@@ -305,7 +324,6 @@
     function switchAuthMode() {
         isLogin = !isLogin;
         document.getElementById('auth-title').innerText = isLogin ? "Account Login" : "Create Account";
-        document.getElementById('name-field').style.display = isLogin ? "none" : "block";
         document.getElementById('auth-btn').innerText = isLogin ? "Login" : "Register";
         document.getElementById('auth-toggle-link').innerText = isLogin ? "Don't have an account? Register here" : "Already have an account? Login here";
     }
@@ -318,14 +336,14 @@
         let users = JSON.parse(localStorage.getItem('app_users')) || [];
         
         if(!isLogin) {
-            if(users.find(u => u.email === email)) return alert('একাউন্ট তৈরি করা আছে! লগইন করুন।');
+            if(users.find(u => u.email === email)) return alert('Account already exists! Please login.');
             let newUser = { email: email, pass: pass, balance: 0.00, history: [] };
             users.push(newUser);
             localStorage.setItem('app_users', JSON.stringify(users));
             currentUser = newUser;
         } else {
             let found = users.find(u => u.email === email && u.pass === pass);
-            if(!found) return alert('ইমেইল বা পাসওয়ার্ড ভুল!');
+            if(!found) return alert('Invalid Email or Password!');
             currentUser = found;
         }
 
@@ -343,7 +361,6 @@
         document.getElementById('dashboard-view').classList.remove('d-none');
         document.getElementById('nav-bar').classList.remove('d-none');
         loadProducts();
-        renderLiveActivities();
     }
 
     function logout() {
@@ -369,20 +386,24 @@
         const amt = Number(document.getElementById('dep-amount').value);
         const trx = document.getElementById('dep-trx').value.trim();
 
-        if(!amt || amt < 25) return alert('সর্বনিম্ন ডিপোজিট ২৫ টাকা!');
-        if(!trx) return alert('TrxID ফিল্ডটি পুরন করুন!');
+        if(!amt || amt < 25) return alert('Minimum deposit is ৳25!');
+        if(!trx) return alert('Please enter Transaction ID!');
+
+        let sourceText = 'Added via bKash Personal';
+        if (selectedMethod === 'Nagad') sourceText = 'Added via Nagad';
+        if (selectedMethod === 'Rocket') sourceText = 'Added via Rocket';
 
         let deps = JSON.parse(localStorage.getItem('app_pending_deposits')) || [];
         deps.push({
             user: currentUser.email,
             amount: amt,
             trx: trx,
-            method: `${selectedMethod} Payment`,
+            method: sourceText,
             time: new Date().toLocaleTimeString()
         });
         localStorage.setItem('app_pending_deposits', JSON.stringify(deps));
 
-        alert('ডিপোজিট রিকোয়েস্ট জমা হয়েছে! এডমিন ভেরিফাই করে অ্যাপ্রুভ করবেন।');
+        alert('Deposit request submitted successfully!');
         document.getElementById('dep-amount').value = '';
         document.getElementById('dep-trx').value = '';
         updatePayBtnAmount();
@@ -399,7 +420,7 @@
 
         let categories = Object.keys(store);
         if(!categories.length) {
-            container.innerHTML = '<div class="text-center text-sub py-4 fw-semibold">কোনো প্রোডাক্ট পাবলিশ করা হয়নি।</div>';
+            container.innerHTML = '<div class="text-center text-sub py-4 fw-semibold">No products published yet.</div>';
             return;
         }
 
@@ -444,8 +465,8 @@
         let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
         let item = store[cat].find(i => i.title === title);
 
-        if(!item || !item.mails || !item.mails.length) return alert('এই প্রোডাক্টটির স্টক খালি আছে!');
-        if(Number(currentUser.balance) < Number(item.price)) return alert('আপনার পর্যাপ্ত ব্যালেন্স নেই! ডিপোজিট করুন।');
+        if(!item || !item.mails || !item.mails.length) return alert('Out of stock!');
+        if(Number(currentUser.balance) < Number(item.price)) return alert('Insufficient balance! Please deposit.');
 
         currentUser.balance = Number(currentUser.balance) - Number(item.price);
         let mailData = item.mails.shift(); 
@@ -465,37 +486,54 @@
         if(uIdx !== -1) users[uIdx] = currentUser;
         localStorage.setItem('app_users', JSON.stringify(users));
 
-        alert(`ক্রয় সফল হয়েছে!\nডাটা: ${mailData}`);
+        alert(`Purchase Successful!\nData: ${mailData}`);
         showDashboard();
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Copied to Clipboard!');
+        });
     }
 
     function loadHistory() {
         let container = document.getElementById('my-history-list');
         container.innerHTML = '';
         if(!currentUser.history || !currentUser.history.length) {
-            container.innerHTML = '<div class="text-center text-sub py-3">কোনো স্টেটমেন্ট বা কেনাকাটা নেই।</div>';
+            container.innerHTML = '<div class="text-center text-sub py-3">No statement or history available.</div>';
             return;
         }
 
-        currentUser.history.reverse().forEach(h => {
+        currentUser.history.slice().reverse().forEach(h => {
             if(h.type === 'purchase') {
+                let isMultiple = Array.isArray(h.data) && h.data.length > 1;
+                let copyContent = isMultiple ? h.data.join('\n') : h.data;
+
                 container.innerHTML += `
                     <div class="bg-dark p-2 rounded mb-2 border-start border-4 border-primary">
-                        <div class="d-flex justify-content-between"><strong>${h.title}</strong> <span class="text-danger">-৳${h.price}</span></div>
-                        <div class="text-sub small">Data: ${h.data}</div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>${h.title}</strong> 
+                            <span class="text-danger">-৳${h.price}</span>
+                        </div>
+                        <div class="text-sub small my-1">Data: ${Array.isArray(h.data) ? h.data.join(', ') : h.data}</div>
+                        <button class="btn btn-sm btn-outline-info py-0 px-2 mt-1 fw-bold" onclick="copyToClipboard('${copyContent}')">
+                            <i class="fa-solid fa-copy me-1"></i>${isMultiple ? 'Copy All' : 'Copy'}
+                        </button>
                     </div>`;
             } else {
                 container.innerHTML += `
                     <div class="bg-dark p-2 rounded mb-2 border-start border-4 border-success">
                         <div class="d-flex justify-content-between"><strong>Deposit Credit</strong> <span class="text-success">+৳${h.amount}</span></div>
-                        <div class="text-sub small">${h.source}</div>
+                        <div class="text-sub small">${h.source || h.method}</div>
                     </div>`;
             }
         });
     }
 
-    // Dynamic Live Feed Generator (Only from Available Stock)
-    function renderLiveActivities() {
+    // Dynamic Live Feed Generator with Independent Rotation Timers
+    let sampleGmailList = ['snriyan340@gmail.com', 'tanvir880@gmail.com', 'kamal450@gmail.com', 'rakib992@gmail.com', 'shakil102@gmail.com'];
+
+    function updateLivePurchaseFeed() {
         let store = JSON.parse(localStorage.getItem('app_store_data')) || {};
         let availableItems = [];
 
@@ -508,38 +546,47 @@
         });
 
         let purContainer = document.getElementById('purchase-list');
-        let depContainer = document.getElementById('deposit-list');
-
         if(!availableItems.length) {
-            purContainer.innerHTML = '<div class="text-sub small text-center">স্টক খালি থাকায় কোনো পারচেজ ফিড নেই।</div>';
-        } else {
-            let fakePurchases = [];
-            let sampleUsers = ['user_88**', 'rakib_**', 'tanvir_**', 'muna_**', 'kamal_**'];
-
-            for(let i = 0; i < Math.min(3, availableItems.length); i++) {
-                let item = availableItems[i];
-                let maxQty = Math.min(100, item.maxStock);
-                let qty = Math.floor(Math.random() * maxQty) + 1;
-                let totalPrice = (qty * item.price).toFixed(2);
-                let u = sampleUsers[Math.floor(Math.random() * sampleUsers.length)];
-
-                fakePurchases.push(`
-                    <div class="live-card d-flex justify-content-between align-items-center" style="border-left-color: #3b82f6;">
-                        <div>
-                            <div class="fw-bold text-white">${u}</div>
-                            <div class="text-sub">${item.title} - ${qty} pcs (৳${totalPrice})</div>
-                        </div>
-                        <span class="badge bg-primary">Completed</span>
-                    </div>`);
-            }
-            purContainer.innerHTML = fakePurchases.join('');
+            purContainer.innerHTML = '<div class="text-sub small text-center">No active purchases.</div>';
+            return;
         }
+
+        let fakePurchases = [];
+        for(let i = 0; i < Math.min(3, availableItems.length); i++) {
+            let item = availableItems[i];
+            let maxQty = Math.min(100, item.maxStock);
+            let qty = Math.floor(Math.random() * maxQty) + 1;
+            let totalPrice = (qty * item.price).toFixed(2);
+            let rawEmail = sampleGmailList[Math.floor(Math.random() * sampleGmailList.length)];
+            let masked = maskEmail(rawEmail);
+
+            fakePurchases.push(`
+                <div class="live-card d-flex justify-content-between align-items-center" style="border-left-color: #3b82f6;">
+                    <div>
+                        <div class="fw-bold text-white">${masked}</div>
+                        <div class="text-sub">${item.title} - ${qty} pcs (৳${totalPrice})</div>
+                    </div>
+                    <span class="badge bg-primary">Completed</span>
+                </div>`);
+        }
+        purContainer.innerHTML = fakePurchases.join('');
+    }
+
+    function updateLiveDepositFeed() {
+        let depContainer = document.getElementById('deposit-list');
+        let methods = ['Added via bKash Personal', 'Added via Nagad', 'Added via Rocket'];
+        let amounts = [25, 30, 50, 60, 100, 250, 500];
+
+        let rawEmail = sampleGmailList[Math.floor(Math.random() * sampleGmailList.length)];
+        let masked = maskEmail(rawEmail);
+        let randomMethod = methods[Math.floor(Math.random() * methods.length)];
+        let randomAmt = amounts[Math.floor(Math.random() * amounts.length)];
 
         depContainer.innerHTML = `
             <div class="live-card d-flex justify-content-between align-items-center">
                 <div>
-                    <div class="fw-bold text-white">shakil_**</div>
-                    <div class="text-sub">bKash Payment - ৳500.00</div>
+                    <div class="fw-bold text-white">${masked}</div>
+                    <div class="text-sub">${randomMethod} - ৳${randomAmt}.00</div>
                 </div>
                 <span class="badge bg-success">Success</span>
             </div>`;
@@ -547,6 +594,12 @@
 
     initDefaultStore();
     if(localStorage.getItem('user_logged')) showDashboard();
+
+    // Separate Rotation Timers (15s and 25s offset)
+    updateLivePurchaseFeed();
+    updateLiveDepositFeed();
+    setInterval(updateLivePurchaseFeed, 15000); 
+    setInterval(updateLiveDepositFeed, 25000);
 </script>
 </body>
 </html>
