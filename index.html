@@ -18,8 +18,6 @@
             --input-bg: #10172a;
             --accent-blue: #3b82f6;
             --accent-green: #10b981;
-            --accent-pink: #e11d48;
-            --accent-orange: #f59e0b;
         }
 
         body {
@@ -71,7 +69,7 @@
             z-index: 1000;
         }
 
-        .bottom-nav button, .bottom-nav a {
+        .bottom-nav button {
             background: none;
             border: none;
             color: var(--text-sub);
@@ -81,7 +79,7 @@
             cursor: pointer;
         }
 
-        .bottom-nav button.active, .bottom-nav a.active { color: var(--accent-blue); }
+        .bottom-nav button.active { color: var(--accent-blue); }
 
         .feed-item {
             background: var(--input-bg);
@@ -161,7 +159,7 @@
 
 <div class="container mt-3" style="max-width: 600px;">
 
-    <!-- VIEW 1: HOME (Products & Live Feeds) -->
+    <!-- VIEW 1: HOME -->
     <div id="view-home" class="app-view active">
         <div class="d-flex gap-2 mb-3 overflow-auto pb-1" id="cat-tabs-container"></div>
         <div id="products-list-container" class="mb-4"></div>
@@ -177,11 +175,11 @@
         </div>
     </div>
 
-    <!-- VIEW 2: DEPOSIT (bKash, Nagad, Rocket) -->
+    <!-- VIEW 2: DEPOSIT -->
     <div id="view-deposit" class="app-view">
         <div class="card-box p-4 mb-4">
             <h5 class="fw-bold text-success mb-3"><i class="fa-solid fa-wallet me-2"></i>Deposit Balance</h5>
-            <p class="text-sub small mb-3">Select your MFS method, send money to our agent number, and submit details below.</p>
+            <p class="text-sub small mb-3">Select MFS, click number to copy instantly, send money (Min ৳25), and submit details.</p>
             
             <div class="row g-2 mb-3">
                 <div class="col-4">
@@ -198,23 +196,23 @@
                 </div>
                 <div class="col-4">
                     <div class="mfs-card" onclick="selectMFS('Rocket', '01900000000')">
-                        <span class="fw-bold text-purple d-block" style="color: #a855f7;">Rocket</span>
+                        <span class="fw-bold d-block" style="color: #a855f7;">Rocket</span>
                         <small class="text-sub">Personal</small>
                     </div>
                 </div>
             </div>
 
             <div id="deposit-info-box" class="alert alert-secondary bg-dark text-white border-secondary small mb-3" style="display:none;">
-                Send Money to <strong id="agent-num-disp" class="text-warning"></strong> (<span id="selected-mfs-name"></span>). Then fill form below.
+                Send Money to <strong id="agent-num-disp" class="text-warning" style="cursor:pointer;" onclick="copyAgentNumber()" title="Click to Copy"></strong> (<span id="selected-mfs-name"></span>). <span class="text-info">(Click number to copy)</span>
             </div>
 
             <div class="mb-3">
-                <label class="small text-sub mb-1">Amount (৳)</label>
-                <input type="number" id="dep-amount" class="form-control" placeholder="100">
+                <label class="small text-sub mb-1">Amount (৳) - Min ৳25</label>
+                <input type="number" id="dep-amount" class="form-control" placeholder="25" min="25">
             </div>
             <div class="mb-3">
                 <label class="small text-sub mb-1">Transaction ID (TrxID)</label>
-                <input type="text" id="dep-trx" class="form-control" placeholder="9H8X7... ">
+                <input type="text" id="dep-trx" class="form-control" placeholder="9H8X7...">
             </div>
 
             <button onclick="submitDeposit()" class="btn btn-success w-100 fw-bold py-2">Submit Deposit Request</button>
@@ -231,7 +229,7 @@
 
 </div>
 
-<!-- Purchase Modal with Quantity, Plus/Minus Buttons & Copy All -->
+<!-- Purchase Modal -->
 <div class="modal fade" id="buyModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content card-box text-white p-2">
@@ -239,9 +237,7 @@
                 <h5 class="modal-title fw-bold" id="modal-product-title">Buy Product</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body" id="modal-body-content">
-                <!-- Dynamic Content -->
-            </div>
+            <div class="modal-body" id="modal-body-content"></div>
         </div>
     </div>
 </div>
@@ -260,6 +256,7 @@
     let selectedCat = '';
     let selectedTitle = '';
     let chosenMFS = '';
+    let currentAgentNum = '';
 
     function getCurrentUser() {
         return sessionStorage.getItem('logged_user') || '';
@@ -356,6 +353,10 @@
         }
 
         store[activeCat].forEach(item => {
+            // Clean up duplicate items from array if any
+            if(item.mails) {
+                item.mails = [...new Set(item.mails)];
+            }
             let stockCount = item.mails ? item.mails.length : 0;
             let isOut = stockCount <= 0;
 
@@ -389,7 +390,7 @@
                 <div class="fw-bold text-warning">৳ ${Number(item.price).toFixed(2)}</div>
             </div>
             <div class="mb-3">
-                <label class="small text-sub mb-1">Enter Quantity (Stock: ${stockCount})</label>
+                <label class="small text-sub mb-1">Enter Quantity (Stock Limit: ${stockCount})</label>
                 <div class="qty-box">
                     <button onclick="adjustQty(-1, ${stockCount})">-</button>
                     <input type="number" id="buy-qty-input" class="form-control shadow-none" value="1" min="1" max="${stockCount}" oninput="updateTotalPrice(${item.price}, ${stockCount})">
@@ -461,7 +462,8 @@
             qty: qty,
             cost: totalCost,
             data: purchasedMails,
-            time: new Date().toLocaleString()
+            timestamp: Date.now(),
+            time: new Date().toLocaleTimeString()
         });
 
         let livePurchases = JSON.parse(localStorage.getItem('app_live_purchases')) || [];
@@ -501,6 +503,7 @@
 
     function selectMFS(methodName, number) {
         chosenMFS = methodName;
+        currentAgentNum = number;
         document.querySelectorAll('.mfs-card').forEach(c => c.classList.remove('selected'));
         event.currentTarget.classList.add('selected');
 
@@ -509,15 +512,26 @@
         document.getElementById('agent-num-disp').innerText = number;
     }
 
+    function copyAgentNumber() {
+        if(!currentAgentNum) return;
+        navigator.clipboard.writeText(currentAgentNum);
+        alert('Agent Number Copied: ' + currentAgentNum);
+    }
+
     function submitDeposit() {
         let amount = Number(document.getElementById('dep-amount').value);
         let trx = document.getElementById('dep-trx').value.trim();
 
         if(!chosenMFS) return alert('Please select a payment method (bKash/Nagad/Rocket)!');
-        if(!amount || amount <= 0 || !trx) return alert('Please enter a valid amount and TrxID!');
+        if(!amount || amount < 25) return alert('Minimum deposit amount is ৳25!');
+        if(!trx) return alert('Please enter your Transaction ID (TrxID)!');
 
         let currEmail = getCurrentUser();
         let pendingDeps = JSON.parse(localStorage.getItem('app_pending_deposits')) || [];
+
+        // Check if TrxID already used
+        let exists = pendingDeps.some(d => d.trx === trx);
+        if(exists) return alert('This Transaction ID has already been submitted!');
 
         let newDep = {
             user: currEmail,
@@ -531,6 +545,21 @@
         pendingDeps.unshift(newDep);
         localStorage.setItem('app_pending_deposits', JSON.stringify(pendingDeps));
 
+        let users = JSON.parse(localStorage.getItem('app_users')) || [];
+        let uIdx = users.findIndex(u => u.email === currEmail);
+        if(uIdx !== -1) {
+            if(!users[uIdx].history) users[uIdx].history = [];
+            users[uIdx].history.unshift({
+                type: 'deposit_req',
+                amount: amount,
+                method: chosenMFS + ' Personal',
+                trx: trx,
+                timestamp: Date.now(),
+                time: new Date().toLocaleTimeString()
+            });
+            localStorage.setItem('app_users', JSON.stringify(users));
+        }
+
         alert('Deposit request submitted successfully! Waiting for admin approval.');
         document.getElementById('dep-amount').value = '';
         document.getElementById('dep-trx').value = '';
@@ -541,9 +570,7 @@
         let now = Date.now();
         let oneHour = 60 * 60 * 1000;
 
-        let pendingDeps = JSON.parse(localStorage.getItem('app_pending_deposits')) || [];
         let users = JSON.parse(localStorage.getItem('app_users')) || [];
-        
         let allDeposits = [];
         users.forEach(u => {
             if(u.history) {
@@ -607,11 +634,15 @@
 
         u.history.forEach(h => {
             let isDep = h.type === 'deposit';
+            let isReq = h.type === 'deposit_req';
+            let badgeColor = isDep ? 'text-success' : (isReq ? 'text-warning' : 'text-danger');
+            let sign = isDep ? '+' : (isReq ? 'Pending + ' : '-');
+            
             container.innerHTML += `
-                <div class="bg-dark p-3 rounded mb-2 border-start border-4 ${isDep ? 'border-success' : 'border-primary'}">
+                <div class="bg-dark p-3 rounded mb-2 border-start border-4 ${isDep ? 'border-success' : (isReq ? 'border-warning' : 'border-primary')}">
                     <div class="d-flex justify-content-between">
-                        <span class="fw-bold text-white">${isDep ? 'Deposit Added' : h.title + ' (' + h.qty + ' pcs)'}</span>
-                        <span class="${isDep ? 'text-success' : 'text-danger'} fw-bold">${isDep ? '+' : '-'}৳${h.cost || h.amount}</span>
+                        <span class="fw-bold text-white">${isDep ? 'Deposit Approved' : (isReq ? 'Deposit Request (' + h.trx + ')' : h.title + ' (' + h.qty + ' pcs)')}</span>
+                        <span class="${badgeColor} fw-bold">${sign}৳${h.cost || h.amount}</span>
                     </div>
                     <div class="small text-sub mt-1">${h.method || 'Purchase'} | ${h.time}</div>
                 </div>`;
